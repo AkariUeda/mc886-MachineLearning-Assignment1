@@ -33,9 +33,6 @@ def train_lr(theta, X, Y, iteracoes, alpha):
         theta = new_theta
         costs.append(cost)
 
-    
-
-
 def replace_dummies(train_features):
     train_features.cut[train_features['cut'] == 'Fair'] = 1
     train_features.cut[train_features['cut'] == 'Good'] = 2
