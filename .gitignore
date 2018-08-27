@@ -1,0 +1,9 @@
+__pycache__
+
+costs.csv
+predictions.csv
+theta.csv
+train_features.csv
+train_labels.csv
+valid_features.csv
+valid_labels.csv
