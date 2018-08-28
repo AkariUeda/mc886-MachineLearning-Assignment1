@@ -4,10 +4,10 @@ import pandas as pd
 
 def normalize_features(features):
   for f in range(1, features.shape[1]):
-    mean = features[:,f].mean()
-    features[:,f] = np.subtract(features[:,f],mean)
+    mini = features[:,f].min()
+    features[:,f] = np.subtract(features[:,f],mini)
     max_value = features[:,f].max()
-    features[:,f] = np.divide(features[:,f],max_value)
+    features[:,f] = 1+np.divide(features[:,f],mini+max_value)
   return features
 
 def replace_dummies(train_features):
@@ -32,7 +32,7 @@ def replace_dummies(train_features):
     train_features.color[train_features['color'] == 'I'] = 2
     train_features.color[train_features['color'] == 'J'] = 1
 
-def get_data():
+def get_data(normalized):
     #Reading the dataset into the training and validation sets.
     dataset = pd.read_csv('diamonds.csv')
     dataset_labels = dataset["price"]
@@ -49,9 +49,9 @@ def get_data():
     #targets
     train_labels = np.array(dataset_labels[0:36679])
     valid_labels = np.array(dataset_labels[36679:45849])
-
-    #normalize_features(train_features)
-    #normalize_features(valid_features)
+    if(normalized):
+        normalize_features(train_features)
+        normalize_features(valid_features)
 
     np.savetxt("train_features.csv",train_features,delimiter=",")
     np.savetxt("train_labels.csv",train_labels,delimiter=",")
