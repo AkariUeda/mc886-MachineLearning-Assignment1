@@ -19,7 +19,7 @@ def shape_csv(name):
 def main():
 
     # Adjusting training parameters
-    iteracoes = 20000
+    iteracoes = 100
     alpha = [0.2, 0.002, 0.0002]
    
     #Plot settings
@@ -39,6 +39,7 @@ def main():
             prog.append("-i="+str(iteracoes))
             prog.append("-dvl=0")
             prog.append("-async=1")
+            print(prog)
             #prog.append("-vr=0")
             #Executes the call for C code
             call(prog)
