@@ -95,13 +95,16 @@ void predict(float x[MAXEXAMPLES][MAXFEATURES],float y[],float theta[]){
     printf("Custo predito: %f\n",cost(theta,y,x));
     fclose(fp );
 }
-void writeInfo(FILE *fp,float cus,int i){
+void writeInfo(FILE *fp,float cus,int i,bool isPred){
 	char s[2048];
 	if(i == 1) sprintf(s,"\"%f\"",cus);   
 	else sprintf(s,",\"%f\"",cus);   
 	fputs(s,fp);      
 	if(VERBOSE && i%HOWVERBOSE == 0){
-	    printf("Iteracao %6d: custo de %f\n",i,cus); 
+	    if(isPred)
+	        printf("Iteracao %6d: custo predito de %f\n",i,cus); 
+	    else
+	        printf("Iteracao %6d: custo de %f\n",i,cus);
 	}  
 }
 void writeTheta(float theta[]){
@@ -116,6 +119,9 @@ void writeTheta(float theta[]){
 }
 void gradientDescBatchAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[]){
     FILE *fp = fopen("costs.csv", "w+");
+    FILE *fpPred;
+    if(DOVALIDATE)
+         fpPred = fopen("predictCosts.csv", "w+");
     float alpha = 0.00027;
     if(RANDTHETA)
         for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;     
@@ -129,13 +135,19 @@ void gradientDescBatchAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
         	theta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
 		}
         
-        float cus = cost(theta,y,x);  
-        writeInfo(fp,cus,i);
+        float cus = cost(theta,y,x);
+        writeInfo(fp,cus,i,false);
+        if(DOVALIDATE){
+            float cusPred = cost(theta,yVal,xVal);
+            writeInfo(fpPred,cusPred,i,true);
+        }
         if(cus != cus || cus > FLT_MAX || cus < -FLT_MAX){
             break;
         }
     }
     fclose(fp);
+    if(DOVALIDATE)
+	    fclose(fpPred);
     writeTheta(theta);
     if(VERBOSE) for(int i = 0;i<FEATURES;i++) printf("Theta %d = %f\n",i,theta[i]);
     if(DOVALIDATE && VERBOSE)
@@ -143,6 +155,9 @@ void gradientDescBatchAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
 }
 void gradientDescBatch(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[]){
     FILE *fp = fopen("costs.csv", "w+");
+    FILE *fpPred;
+    if(DOVALIDATE)
+         fpPred = fopen("predictCosts.csv", "w+");
     float oldTheta[FEATURES];
     if(RANDTHETA)
         for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;     
@@ -152,13 +167,19 @@ void gradientDescBatch(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXF
             oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
         }        
         memcpy(theta,oldTheta,FEATURES*sizeof(float));  
-        float cus = cost(theta,y,x);
-        writeInfo(fp,cus,i);
+        float cus = cost(theta,y,x);        
+        writeInfo(fp,cus,i,false);
+        if(DOVALIDATE){
+            float cusPred = cost(theta,yVal,xVal);
+            writeInfo(fpPred,cusPred,i,true);
+        }
         if(cus != cus || cus > FLT_MAX || cus < -FLT_MAX){
             break;
         }
     }
 	fclose(fp);
+	if(DOVALIDATE)
+	    fclose(fpPred);
 	writeTheta(theta);
     if(VERBOSE) for(int i = 0;i<FEATURES;i++) printf("Theta %d = %f\n",i,theta[i]);
     if(DOVALIDATE && VERBOSE)
@@ -176,7 +197,7 @@ void gradientDescStochastic(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
             }        
             memcpy(theta,oldTheta,FEATURES*sizeof(float));
         }            
-        writeInfo(fp,cost(theta,y,x),i);
+        writeInfo(fp,cost(theta,y,x),i,true);
     }
     fclose(fp);
     writeTheta(theta);
