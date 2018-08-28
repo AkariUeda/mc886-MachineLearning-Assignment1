@@ -4,6 +4,7 @@ import matplotlib
 import pandas as pd
 import matplotlib.pyplot as plt
 import warnings
+matplotlib.use("qt4agg")
 from subprocess import call
 
 warnings.filterwarnings('ignore')
@@ -101,7 +102,8 @@ def main():
     prog.append("-i="+str(iteracoes))
     prog.append("-dvl=1")
 
-    #Executes the call for C code
+    #Call C code for training
+
     call(prog)
 
     #train_lr(theta, train_features, train_labels, iterations, alpha)
