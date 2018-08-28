@@ -19,6 +19,7 @@ const int MAXVALIDATE = 10000;
 const float FEXINV = (float)1/EXAMPLES;
 const float DFEXINV = (float)1/(2*EXAMPLES);
 const double LFEXINV = (double)1/EXAMPLES;
+/*Helper functions for reading data from the .csv files*/
 void read_csv(int row, int col, string filename, float dat[MAXEXAMPLES][MAXFEATURES]){
 	FILE *file;
 	file = fopen(filename.c_str(), "r");
@@ -51,6 +52,56 @@ void read_array(int row, string filename, float dat[]){
     }
     return;
 }
+
+
+vector<string> split(const string& s, char delimiter){
+   vector<string> tokens;
+   string token;
+   istringstream tokenStream(s);
+   while (getline(tokenStream, token, delimiter)) tokens.push_back(token);
+   return tokens;
+}
+template<class T> T strToNum(const string s){
+    stringstream ss;
+    ss << s;
+    T v;
+    ss >> v;
+    return v;
+}
+/*Helper functions for matrix manipulation*/
+void transpose(float A[MAXEXAMPLES][MAXFEATURES], float B[MAXFEATURES][MAXEXAMPLES]){
+    for(int i = 0;i<FEATURES;i++){
+        for(int j = 0;j<EXAMPLES;j++){
+            B[i][j] = A[j][i];
+        }
+    }
+    return;
+}
+float** allocateMatrix(int lin, int col){
+    float **m;
+    m = (float**) malloc(lin*sizeof(float*));
+    if(m == NULL) exit(0);
+    for(int i = 0;i<lin;i++){
+        m[i] = (float*)malloc(col*sizeof(float));
+        if(m[i] == NULL) exit(0);
+    }
+    return m;
+}
+float** freeMatrix(int lin, int col,float **m){
+    for(int i = 0;i<lin;i++) free(m[i]);
+    free(m);
+    return NULL;
+}
+void matMult(float **A,int la,int lb,float **B,int ca,int cb,float **C){
+    for(int i = 0;i<la;i++){
+        for(int j = 0;j<cb;j++){
+            C[i][j] = 0;
+            for(int k = 0;k  < ca;k++) C[i][j] += A[i][k] + B[k][j];
+        }
+    }
+}
+
+/*Helper functions to calculate hypothesis, summations and cost for the regressions*/
 float h(float x[],float theta[]){
     float sum = 0.0, c = 0.0;
     for(int i = 0;i<FEATURES;i++){ 
@@ -82,6 +133,7 @@ float cost(float theta[],float y[],float x[MAXEXAMPLES][MAXFEATURES]){
     }
     return sum/(2*EXAMPLES);
 }
+/*Helper functions that print and log values*/
 void printV(float v[], int T){
     for(int i = 0;i<T;i++) printf("%f ",v[i]);
     printf("\n");
@@ -119,6 +171,29 @@ void writeTheta(float theta[]){
 	}	
     fclose(th);
 }
+bool writeCostToFile(FILE *fp,FILE *fpPred,float theta[],float x[MAXEXAMPLES][MAXFEATURES],float y[],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],int i){
+    float cus = cost(theta,y,x);
+    writeInfo(fp,cus,i,false);
+    if(DOVALIDATE){
+        float cusPred = cost(theta,yVal,xVal);
+        writeInfo(fpPred,cusPred,i,true);
+    }
+    if(cus != cus || cus > FLT_MAX || cus < -FLT_MAX){
+        return false;
+    }
+    return true;
+}
+
+void closeFiles(FILE *fp,FILE *fpPred,float theta[],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[]){
+    fclose(fp);
+    if(DOVALIDATE)
+	    fclose(fpPred);
+    writeTheta(theta);
+    if(VERBOSE) for(int i = 0;i<FEATURES;i++) printf("Theta %d = %f\n",i,theta[i]);
+    if(DOVALIDATE && VERBOSE)
+        predict(xVal,yVal,theta);
+}
+/*Gradient descent functions */
 void gradientDescBatchAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[]){
     FILE *fp = fopen("costs.csv", "w+");
     FILE *fpPred;
@@ -134,25 +209,10 @@ void gradientDescBatchAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
         for(int j = 0;j<FEATURES;j++){
         	float sum = hold[j].get();
         	theta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
-		}
-        
-        float cus = cost(theta,y,x);
-        writeInfo(fp,cus,i,false);
-        if(DOVALIDATE){
-            float cusPred = cost(theta,yVal,xVal);
-            writeInfo(fpPred,cusPred,i,true);
-        }
-        if(cus != cus || cus > FLT_MAX || cus < -FLT_MAX){
-            break;
-        }
+		}        
+        writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,i);
     }
-    fclose(fp);
-    if(DOVALIDATE)
-	    fclose(fpPred);
-    writeTheta(theta);
-    if(VERBOSE) for(int i = 0;i<FEATURES;i++) printf("Theta %d = %f\n",i,theta[i]);
-    if(DOVALIDATE && VERBOSE)
-        predict(xVal,yVal,theta);
+    closeFiles(fp,fpPred,theta,xVal,yVal);
 }
 void gradientDescBatch(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[]){
     FILE *fp = fopen("costs.csv", "w+");
@@ -168,29 +228,17 @@ void gradientDescBatch(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXF
             oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
         }        
         memcpy(theta,oldTheta,FEATURES*sizeof(float));  
-        float cus = cost(theta,y,x);        
-        writeInfo(fp,cus,i,false);
-        if(DOVALIDATE){
-            float cusPred = cost(theta,yVal,xVal);
-            writeInfo(fpPred,cusPred,i,true);
-        }
-        if(cus != cus || cus > FLT_MAX || cus < -FLT_MAX){
+        if(!writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,i)){
             break;
         }
     }
-	fclose(fp);
-	if(DOVALIDATE)
-	    fclose(fpPred);
-	writeTheta(theta);
-    if(VERBOSE) for(int i = 0;i<FEATURES;i++) printf("Theta %d = %f\n",i,theta[i]);
-    if(DOVALIDATE && VERBOSE)
-        predict(xVal,yVal,theta);
+	closeFiles(fp,fpPred,theta,xVal,yVal);
 }
-void gradientDescStochastic(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[]){
+void gradientDescStochastic(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[]){
     FILE *fp = fopen("costs.csv", "w+");     FILE *fpPred;
     if(DOVALIDATE)
          fpPred = fopen("predictCosts.csv", "w+");
-    float oldTheta[FEATURES], theta[FEATURES] = {0};
+    float oldTheta[FEATURES];
     if(RANDTHETA)
         for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;     
     for(int i = 1;i<=ITER;i++){
@@ -200,25 +248,13 @@ void gradientDescStochastic(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
             }        
             memcpy(theta,oldTheta,FEATURES*sizeof(float));
         }            
-        float cus = cost(theta,y,x);        
-        writeInfo(fp,cus,i,false);
-        if(DOVALIDATE){
-            float cusPred = cost(theta,yVal,xVal);
-            writeInfo(fpPred,cusPred,i,true);
-        }
-        if(cus != cus || cus > FLT_MAX || cus < -FLT_MAX){
+        if(!writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,i)){
             break;
         }
     }
-    fclose(fp);
-	if(DOVALIDATE)
-	    fclose(fpPred);
-    writeTheta(theta);
-    if(VERBOSE) for(int i = 0;i<FEATURES;i++) printf("Theta %d = %f\n",i,theta[i]);
-    if(DOVALIDATE && VERBOSE)
-        predict(xVal,yVal,theta);
+    closeFiles(fp,fpPred,theta,xVal,yVal);
 }
-void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[]){
+void gradientDescMiniBAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[]){
     FILE *fp = fopen("costs.csv", "w+");
     FILE *fpPred;
     if(DOVALIDATE)
@@ -236,71 +272,36 @@ void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXF
             	float sum = hold[j].get();
             	theta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
 		    }        
-            float cus = cost(theta,y,x);
-            writeInfo(fp,cus,i,false);
-            if(DOVALIDATE){
-                float cusPred = cost(theta,yVal,xVal);
-                writeInfo(fpPred,cusPred,i,true);
-            }
-            if(cus != cus || cus > FLT_MAX || cus < -FLT_MAX){
+            if(!writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,i)){
                 break;
             }
         }
     }
-    fclose(fp);
+    closeFiles(fp,fpPred,theta,xVal,yVal);
+}
+void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[]){
+    FILE *fp = fopen("costs.csv", "w+");
+    FILE *fpPred;
     if(DOVALIDATE)
-	    fclose(fpPred);
-    writeTheta(theta);
-    if(VERBOSE) for(int i = 0;i<FEATURES;i++) printf("Theta %d = %f\n",i,theta[i]);
-    if(DOVALIDATE && VERBOSE)
-        predict(xVal,yVal,theta);
-}
-vector<string> split(const string& s, char delimiter){
-   vector<string> tokens;
-   string token;
-   istringstream tokenStream(s);
-   while (getline(tokenStream, token, delimiter)) tokens.push_back(token);
-   return tokens;
-}
-template<class T> T strToNum(const string s){
-    stringstream ss;
-    ss << s;
-    T v;
-    ss >> v;
-    return v;
-}
-void transpose(float A[MAXEXAMPLES][MAXFEATURES], float B[MAXFEATURES][MAXEXAMPLES]){
-    for(int i = 0;i<FEATURES;i++){
-        for(int j = 0;j<EXAMPLES;j++){
-            B[i][j] = A[j][i];
+         fpPred = fopen("predictCosts.csv", "w+");
+    float oldTheta[FEATURES];
+    if(RANDTHETA)
+        for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;     
+    for(int i = 1;i<=ITER;i++){
+        for(int b = 0;b<FEATURES;b+=BATCHSIZE){
+            for(int j = 0;j<FEATURES;j++){
+                float sum = summation(x,y,xt[j],theta,b,b+BATCHSIZE-1);
+                oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
+            }        
+            memcpy(theta,oldTheta,FEATURES*sizeof(float));  
+            if(!writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,i)){
+                break;
+            }
         }
     }
-    return;
+	closeFiles(fp,fpPred,theta,xVal,yVal);
 }
-float** allocateMatrix(int lin, int col){
-    float **m;
-    m = (float**) malloc(lin*sizeof(float*));
-    if(m == NULL) exit(0);
-    for(int i = 0;i<lin;i++){
-        m[i] = (float*)malloc(col*sizeof(float));
-        if(m[i] == NULL) exit(0);
-    }
-    return m;
-}
-float** freeMatrix(int lin, int col,float **m){
-    for(int i = 0;i<lin;i++) free(m[i]);
-    free(m);
-    return NULL;
-}
-void matMult(float **A,int la,int lb,float **B,int ca,int cb,float **C){
-    for(int i = 0;i<la;i++){
-        for(int j = 0;j<cb;j++){
-            C[i][j] = 0;
-            for(int k = 0;k  < ca;k++) C[i][j] += A[i][k] + B[k][j];
-        }
-    }
-}
-
+/*Main*/
 int main(int argc, char** argv){
     float traindata[MAXEXAMPLES][MAXFEATURES],label[MAXEXAMPLES],dataTransp[MAXFEATURES][MAXEXAMPLES],dataVal[MAXVALIDATE][MAXFEATURES],labelVal[MAXVALIDATE],theta[FEATURES];       
     srand(time(NULL));
@@ -343,11 +344,16 @@ int main(int argc, char** argv){
 	read_csv(row, col, fnameVal, dataVal);
 	read_array(row,fnameValLabel,labelVal);
 	transpose(traindata,dataTransp);
-	if(SGD){
-	    gradientDescStochastic(traindata,label,dataTransp,dataVal,labelVal);
-			
-    }else if(MINIBATCH){
-        gradientDescMiniB(traindata,label,dataTransp,dataVal,labelVal,theta);
+	if(MINIBATCH){
+        if(!ASYNC)
+        	gradientDescMiniB(traindata,label,dataTransp,dataVal,labelVal,theta);
+        else
+        	gradientDescMiniBAsync(traindata,label,dataTransp,dataVal,labelVal,theta);     
+    }else if(SGD){
+        //if(!ASYNC)
+        	gradientDescStochastic(traindata,label,dataTransp,dataVal,labelVal,theta);
+        //else
+        //	gradientDescBatchMiniBAsync(traindata,label,dataTransp,dataVal,labelVal,theta);     
     }else{
         if(!ASYNC)
         	gradientDescBatch(traindata,label,dataTransp,dataVal,labelVal,theta);
