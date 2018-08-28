@@ -2,8 +2,10 @@ __pycache__
 
 costs.csv
 predictions.csv
+predictCosts.csv
 theta.csv
 train_features.csv
 train_labels.csv
 valid_features.csv
 valid_labels.csv
+linearRegressionFlex

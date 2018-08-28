@@ -19,7 +19,7 @@ def shape_csv(name):
 def main():
 
     # Adjusting training parameters
-    iteracoes = 1000
+    iteracoes = 5000
     alpha = [0.2, 0.002, 0.0002]
    
     #Plot settings
@@ -40,8 +40,8 @@ def main():
             prog.append("-dvl=0")
             prog.append(gradients[g])
             prog.append("-async=1")
-            print(prog)
-            #prog.append("-vr=0")
+            prog.append("-vr=0")
+
             #Executes the call for C code
             call(prog)
 
@@ -58,7 +58,7 @@ def main():
             elif g==1:
                 ax.plot(range(100,iteracoes), costs[0, 100:], cores[a], label='SGD ' + str(alpha[a]), linestyle='-')
             elif g==2:
-                ax.plot(range(100,iteracoes), costs[0, 100:], cores[a], label='MiniBatch ' + str(alpha[a]), linestyle='-.')
+                ax.plot(range(100,iteracoes), costs[0, 100:], cores[a], label='MiniBatch ' + str(alpha[a]), linestyle=':')
                 
     ax.legend()
     plt.savefig('gradients_'+str(iteracoes)+'.png')

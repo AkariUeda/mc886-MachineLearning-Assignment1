@@ -24,9 +24,13 @@ def main():
    
     #Plot settings
     matplotlib.style.use('seaborn')
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.set_ylabel('Custo')
-    ax.set_xlabel('Iterações')
+    fig_train, train_plot = plt.subplots(figsize=(10, 5))
+    train_plot.set_ylabel('Cost')
+    train_plot.set_xlabel('Iterations')
+
+    fig_valid, valid_plot = plt.subplots(figsize=(10, 5))
+    valid_plot.set_ylabel('Cost')
+    valid_plot.set_xlabel('Iterations')
     cores = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
 
     train_features, valid_features, train_labels, valid_labels = get_data(1)
@@ -36,7 +40,7 @@ def main():
         prog.append("./linearRegressionFlex")
         prog.append("-a="+str(alpha[a]))
         prog.append("-i="+str(iteracoes))
-        prog.append("-dvl=0")
+        prog.append("-dvl=1")
         prog.append("-async=1")
         prog.append("-vr=0")
 
@@ -46,18 +50,25 @@ def main():
         #train_lr(theta, train_features, train_labels, iterations, alpha)
         costs = shape_csv('costs.csv')
         theta = shape_csv('theta.csv')
-        #predictions = shape_csv('predictions.csv')
+        predictions = shape_csv('predictCosts.csv')
 
         #Plotting
         if not np.isfinite(costs[0]).all(): 
             continue
         else:
-            ax.plot(range(1000,iteracoes), costs[0, 1000:], cores[a], label='Batch ' + str(alpha[a]), linestyle='-')
+            train_plot.plot(range(1000,iteracoes), costs[0, 1000:], cores[a], label=str(alpha[a]), linestyle='-')
        
-    ax.legend()
-    plt.savefig('lr_'+str(iteracoes)+'.png')
-    fig.show()
+        if not np.isfinite(predictions[0]).all(): 
+            continue
+        else:
+            valid_plot.plot(range(1000,iteracoes), predictions[0, 1000:], cores[a], label=str(alpha[a]), linestyle='-')
 
+    train_plot.legend()
+    valid_plot.legend()
+    fig_train.show()
+    fig_train.savefig('train_lr_'+str(iteracoes)+'.png')
+    fig_valid.show()
+    fig_valid.savefig('valid_lr_'+str(iteracoes)+'.png')
 if __name__ == "__main__":
     main()
 
