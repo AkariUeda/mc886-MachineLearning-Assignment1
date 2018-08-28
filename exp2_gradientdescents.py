@@ -19,7 +19,7 @@ def shape_csv(name):
 def main():
 
     # Adjusting training parameters
-    iteracoes = 10000
+    iteracoes = 1000
     alpha = [0.2, 0.002, 0.0002]
    
     #Plot settings
@@ -28,7 +28,7 @@ def main():
     ax.set_ylabel('Custo')
     ax.set_xlabel('Iterações')
     cores = ['C0', 'C1', 'C2']
-    gradients = ["-sgd=0", "-sgd=1"]
+    gradients = ["-sgd=0", "-sgd=1", "-mb=1"]
 
     train_features, valid_features, train_labels, valid_labels = get_data(1)
     for g in range(0,len(gradients)):
@@ -55,8 +55,10 @@ def main():
                 continue
             elif g==0:
                 ax.plot(range(100,iteracoes), costs[0, 100:], cores[a], label='Batch ' + str(alpha[a]), linestyle='--')
-            else:
+            elif g==1:
                 ax.plot(range(100,iteracoes), costs[0, 100:], cores[a], label='SGD ' + str(alpha[a]), linestyle='-')
+            elif g==2:
+                ax.plot(range(100,iteracoes), costs[0, 100:], cores[a], label='MiniBatch ' + str(alpha[a]), linestyle='-.')
                 
     ax.legend()
     plt.savefig('gradients_'+str(iteracoes)+'.png')
