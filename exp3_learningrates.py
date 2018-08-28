@@ -20,7 +20,7 @@ def main():
 
     # Adjusting training parameters
     iteracoes = 20000
-    alpha = [0.2, 0.01, 0.02, 0.002, 0.0002, 0.00002]
+    alpha = [0.2]
    
     #Plot settings
     matplotlib.style.use('seaborn')
@@ -36,9 +36,11 @@ def main():
         prog.append("./linearRegressionFlex")
         prog.append("-a="+str(alpha[a]))
         prog.append("-i="+str(iteracoes))
-        prog.append("-dvl=0")
+        prog.append("-dvl=1")
         prog.append("-async=1")
-        prog.append("-vr=0")
+        prog.append("-vr=1")
+        prog.append("-rd=1")
+
 
         #Executes the call for C code
         call(prog)
@@ -52,7 +54,7 @@ def main():
         if not np.isfinite(costs[0]).all(): 
             continue
         else:
-            ax.plot(range(1000,iteracoes), costs[0, 1000:], cores[a], label='Batch ' + str(alpha[a]), linestyle='-')
+            ax.plot(range(3000,iteracoes), costs[0, 3000:], cores[a], label='Batch ' + str(alpha[a]), linestyle='-')
        
     ax.legend()
     plt.savefig('lr_'+str(iteracoes)+'.png')
