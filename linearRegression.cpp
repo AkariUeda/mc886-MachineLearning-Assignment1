@@ -131,6 +131,9 @@ void gradientDescBatchAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
         
         float cus = cost(theta,y,x);  
         writeInfo(fp,cus,i);
+        if(cus != cus || cus > FLT_MAX || cus < -FLT_MAX){
+            break;
+        }
     }
     fclose(fp);
     writeTheta(theta);
@@ -149,7 +152,11 @@ void gradientDescBatch(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXF
             oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
         }        
         memcpy(theta,oldTheta,FEATURES*sizeof(float));  
-        writeInfo(fp,cost(theta,y,x)   ,i);
+        float cus = cost(theta,y,x);
+        writeInfo(fp,cus,i);
+        if(cus != cus || cus > FLT_MAX || cus < -FLT_MAX){
+            break;
+        }
     }
 	fclose(fp);
 	writeTheta(theta);
