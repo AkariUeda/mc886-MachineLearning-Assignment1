@@ -10,6 +10,7 @@ int HOWVERBOSE = 1000;
 int SGD = 0;
 int RANDTHETA = 0;
 int ASYNC = 0;
+int MINIBATCH = 0;
 float ALPHA = 0.00027;
 const int MAXEXAMPLES = 50000;
 const int MAXFEATURES = 10;
@@ -59,9 +60,9 @@ float h(float x[],float theta[]){
     }    
     return sum;
 }
-float summation(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xj[],float theta[]){
+float summation(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xj[],float theta[],int ini, int fim){
     float sum = 0.0, c = 0.0;
-    for(int i = 0;i<EXAMPLES;i++){
+    for(int i = ini;i<fim && i<EXAMPLES;i++){
         float yl = (h(x[i],theta)-y[i])*xj[i] - c;
         float t = sum + yl;
         c = (t-sum)-yl;
@@ -128,7 +129,7 @@ void gradientDescBatchAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
     for(int i = 1;i<=ITER;i++){
     	future<float> hold[FEATURES];
         for(int j = 0;j<FEATURES;j++){
-            hold[j] = async(launch::async,summation,x,y,xt[j],theta);
+            hold[j] = async(launch::async,summation,x,y,xt[j],theta,0,EXAMPLES);
         }        
         for(int j = 0;j<FEATURES;j++){
         	float sum = hold[j].get();
@@ -163,7 +164,7 @@ void gradientDescBatch(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXF
         for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;     
     for(int i = 1;i<=ITER;i++){
         for(int j = 0;j<FEATURES;j++){
-            float sum = summation(x,y,xt[j],theta);
+            float sum = summation(x,y,xt[j],theta,0,EXAMPLES);
             oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
         }        
         memcpy(theta,oldTheta,FEATURES*sizeof(float));  
@@ -217,13 +218,42 @@ void gradientDescStochastic(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
     if(DOVALIDATE && VERBOSE)
         predict(xVal,yVal,theta);
 }
-void transpose(float A[MAXEXAMPLES][MAXFEATURES], float B[MAXFEATURES][MAXEXAMPLES]){
-    for(int i = 0;i<FEATURES;i++){
-        for(int j = 0;j<EXAMPLES;j++){
-            B[i][j] = A[j][i];
+void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[],int batchSize){
+    FILE *fp = fopen("costs.csv", "w+");
+    FILE *fpPred;
+    if(DOVALIDATE)
+         fpPred = fopen("predictCosts.csv", "w+");
+    float alpha = 0.00027;
+    if(RANDTHETA)
+        for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;     
+    for(int i = 1;i<=ITER;i++){
+        for(int b = 0;b<FEATURES;b+=batchSize){
+        	future<float> hold[FEATURES];
+            for(int j = 0;j<FEATURES;j++){
+                hold[j] = async(launch::async,summation,x,y,xt[j],theta,0,EXAMPLES);
+            }        
+            for(int j = 0;j<FEATURES;j++){
+            	float sum = hold[j].get();
+            	theta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
+		    }        
+            float cus = cost(theta,y,x);
+            writeInfo(fp,cus,i,false);
+            if(DOVALIDATE){
+                float cusPred = cost(theta,yVal,xVal);
+                writeInfo(fpPred,cusPred,i,true);
+            }
+            if(cus != cus || cus > FLT_MAX || cus < -FLT_MAX){
+                break;
+            }
         }
     }
-    return;
+    fclose(fp);
+    if(DOVALIDATE)
+	    fclose(fpPred);
+    writeTheta(theta);
+    if(VERBOSE) for(int i = 0;i<FEATURES;i++) printf("Theta %d = %f\n",i,theta[i]);
+    if(DOVALIDATE && VERBOSE)
+        predict(xVal,yVal,theta);
 }
 vector<string> split(const string& s, char delimiter){
    vector<string> tokens;
@@ -238,6 +268,14 @@ template<class T> T strToNum(const string s){
     T v;
     ss >> v;
     return v;
+}
+void transpose(float A[MAXEXAMPLES][MAXFEATURES], float B[MAXFEATURES][MAXEXAMPLES]){
+    for(int i = 0;i<FEATURES;i++){
+        for(int j = 0;j<EXAMPLES;j++){
+            B[i][j] = A[j][i];
+        }
+    }
+    return;
 }
 float** allocateMatrix(int lin, int col){
     float **m;
@@ -284,6 +322,7 @@ int main(int argc, char** argv){
         else if(args[0] == "-alpha" || args[0] == "-a") ALPHA = strToNum<float>(args[1]);
         else if(args[0] == "-stochasticdesc" || args[0] == "-sgd") SGD = strToNum<int>(args[1]);
         else if(args[0] == "-randtheta" || args[0] == "-rt") RANDTHETA = strToNum<int>(args[1]);
+        else if(args[0] == "-minibatch" || args[0] == "-mb") MINIBATCH = strToNum<int>(args[1]);
         else if(args[0] == "-async" || args[0] == "-as") ASYNC = strToNum<int>(args[1]);
         else if(args[0] == "-help" || args[0] == "-h"){
             printf("%s",HELP.c_str());
@@ -303,13 +342,16 @@ int main(int argc, char** argv){
 	read_csv(row, col, fnameVal, dataVal);
 	read_array(row,fnameValLabel,labelVal);
 	transpose(traindata,dataTransp);
-	if(!SGD){
-		if(!ASYNC)
+	if(SGD){
+	    gradientDescStochastic(traindata,label,dataTransp,dataVal,labelVal);
+			
+    }else if(MINIBATCH){
+        gradientDescMiniB(traindata,label,dataTransp,dataVal,labelVal,theta,32);
+    }else{
+        if(!ASYNC)
         	gradientDescBatch(traindata,label,dataTransp,dataVal,labelVal,theta);
         else
-        	gradientDescBatchAsync(traindata,label,dataTransp,dataVal,labelVal,theta);        	
-    }else{
-        gradientDescStochastic(traindata,label,dataTransp,dataVal,labelVal);
+        	gradientDescBatchAsync(traindata,label,dataTransp,dataVal,labelVal,theta);        
     }
 	return 0;
 }
