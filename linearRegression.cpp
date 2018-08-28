@@ -11,6 +11,7 @@ int SGD = 0;
 int RANDTHETA = 0;
 int ASYNC = 0;
 int MINIBATCH = 0;
+int BATCHSIZE = 32;
 float ALPHA = 0.00027;
 const int MAXEXAMPLES = 50000;
 const int MAXFEATURES = 10;
@@ -123,7 +124,6 @@ void gradientDescBatchAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
     FILE *fpPred;
     if(DOVALIDATE)
          fpPred = fopen("predictCosts.csv", "w+");
-    float alpha = 0.00027;
     if(RANDTHETA)
         for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;     
     for(int i = 1;i<=ITER;i++){
@@ -218,7 +218,7 @@ void gradientDescStochastic(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
     if(DOVALIDATE && VERBOSE)
         predict(xVal,yVal,theta);
 }
-void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[],int batchSize){
+void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[]){
     FILE *fp = fopen("costs.csv", "w+");
     FILE *fpPred;
     if(DOVALIDATE)
@@ -227,10 +227,10 @@ void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXF
     if(RANDTHETA)
         for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;     
     for(int i = 1;i<=ITER;i++){
-        for(int b = 0;b<FEATURES;b+=batchSize){
+        for(int b = 0;b<FEATURES;b+=BATCHSIZE){
         	future<float> hold[FEATURES];
             for(int j = 0;j<FEATURES;j++){
-                hold[j] = async(launch::async,summation,x,y,xt[j],theta,0,EXAMPLES);
+                hold[j] = async(launch::async,summation,x,y,xt[j],theta,b,b+BATCHSIZE-1);
             }        
             for(int j = 0;j<FEATURES;j++){
             	float sum = hold[j].get();
@@ -323,6 +323,7 @@ int main(int argc, char** argv){
         else if(args[0] == "-stochasticdesc" || args[0] == "-sgd") SGD = strToNum<int>(args[1]);
         else if(args[0] == "-randtheta" || args[0] == "-rt") RANDTHETA = strToNum<int>(args[1]);
         else if(args[0] == "-minibatch" || args[0] == "-mb") MINIBATCH = strToNum<int>(args[1]);
+        else if(args[0] == "-batchsize" || args[0] == "-bs") BATCHSIZE = strToNum<int>(args[1]);
         else if(args[0] == "-async" || args[0] == "-as") ASYNC = strToNum<int>(args[1]);
         else if(args[0] == "-help" || args[0] == "-h"){
             printf("%s",HELP.c_str());
@@ -346,7 +347,7 @@ int main(int argc, char** argv){
 	    gradientDescStochastic(traindata,label,dataTransp,dataVal,labelVal);
 			
     }else if(MINIBATCH){
-        gradientDescMiniB(traindata,label,dataTransp,dataVal,labelVal,theta,32);
+        gradientDescMiniB(traindata,label,dataTransp,dataVal,labelVal,theta);
     }else{
         if(!ASYNC)
         	gradientDescBatch(traindata,label,dataTransp,dataVal,labelVal,theta);
