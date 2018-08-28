@@ -22,7 +22,7 @@ def main():
     # Adjusting training parameters
     #theta = np.ones(10)
     iteracoes = 10000
-    alpha = 0.0002
+    alpha = 0.2
     prog=[]
     prog.append("./linearRegressionFlex")
     prog.append("-a="+str(alpha))

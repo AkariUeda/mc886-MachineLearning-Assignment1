@@ -92,6 +92,7 @@ void predict(float x[MAXEXAMPLES][MAXFEATURES],float y[],float theta[]){
 		sprintf(s,"\"%f\",\"%f\"\n",h(x[i],theta),y[i]);   
     	fputs(s,fp );      
     }
+    printf("Custo predito: %f\n",cost(theta,y,x));
     fclose(fp );
 }
 void writeInfo(FILE *fp,float cus,int i){
