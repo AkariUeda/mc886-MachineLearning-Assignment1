@@ -20,7 +20,7 @@ def main():
 
     # Adjusting training parameters
     iteracoes = 20000
-    alpha = [0.2, 0.01, 0.02, 0.002, 0.0002, 0.00002]
+    alpha = [0.2]
    
     #Plot settings
     matplotlib.style.use('seaborn')
@@ -42,7 +42,9 @@ def main():
         prog.append("-i="+str(iteracoes))
         prog.append("-dvl=1")
         prog.append("-async=1")
-        prog.append("-vr=0")
+        prog.append("-vr=1")
+        prog.append("-rd=1")
+
 
         #Executes the call for C code
         call(prog)
@@ -57,6 +59,7 @@ def main():
             continue
         else:
             train_plot.plot(range(1000,iteracoes), costs[0, 1000:], cores[a], label=str(alpha[a]), linestyle='-')
+
        
         if not np.isfinite(predictions[0]).all(): 
             continue
