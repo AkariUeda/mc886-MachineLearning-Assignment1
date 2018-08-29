@@ -178,12 +178,16 @@ void writeTheta(float theta[]){
 	}	
     fclose(th);
 }
-bool writeCostToFile(FILE *fp,FILE *fpPred,float theta[],float x[MAXEXAMPLES][MAXFEATURES],float y[],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],int i){
+bool writeCostToFile(FILE *fp,FILE *fpPred,FILE *fpTime,FILE *fpTimePred,float ts,float theta[],float x[MAXEXAMPLES][MAXFEATURES],float y[],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],int i){
     float cus = cost(theta,y,x);
     writeInfo(fp,cus,i,false);
+    if(TIME)
+        writeInfo(fpTime,ts,i,false);
     if(DOVALIDATE){
         float cusPred = cost(theta,yVal,xVal);
         writeInfo(fpPred,cusPred,i,true);
+        if(TIME)
+            writeInfo(fpTimePred,ts,i,false);
     }  
     return true;
 }
@@ -198,8 +202,9 @@ void closeFiles(FILE *fp,FILE *fpPred,float theta[],float xVal[MAXVALIDATE][MAXF
 }
 
 /*Gradient descent functions */
-void gradientDescBatchAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv){
+void gradientDescBatchAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv,FILE *fpTime,FILE *fpTimePred){
 	bool stop = false;    
+	float ts = 0;
     for(int i = 1;i<=ITER && !stop;i++){
     	future<float> hold[FEATURES];
         for(int j = 0;j<FEATURES;j++){
@@ -210,12 +215,13 @@ void gradientDescBatchAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
         	theta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
         	stop = isNan(theta[j]);
 		}     
-        writeCostToFile(costCsv,predictCsv,theta,x,y,xVal,yVal,i);
+        writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,i);
     }
 }
-void gradientDescBatch(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv){
+void gradientDescBatch(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv,FILE *fpTime,FILE *fpTimePred){
    
-    float oldTheta[FEATURES];    
+    float oldTheta[FEATURES];  
+    float ts = 0;  
 	bool stop = false; 
     for(int i = 1;i<=ITER && !stop;i++){
         for(int j = 0;j<FEATURES && !stop;j++){
@@ -224,12 +230,13 @@ void gradientDescBatch(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXF
 			stop = isNan(oldTheta[j]);
         }        
         memcpy(theta,oldTheta,FEATURES*sizeof(float));  
-        writeCostToFile(costCsv,predictCsv,theta,x,y,xVal,yVal,i);
+        writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,i);
           
     }
 }
-void gradientDescStochastic(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv){
+void gradientDescStochastic(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv,FILE *fpTime,FILE *fpTimePred){
     float oldTheta[FEATURES];   
+    float ts = 0;
 	bool stop = false;  
     for(int i = 1;i<=ITER && !stop;i++){        
         float func = h(x[(i-1)%EXAMPLES],theta);
@@ -238,12 +245,13 @@ void gradientDescStochastic(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
 			stop = isNan(oldTheta[j]); 
         }        
         memcpy(theta,oldTheta,FEATURES*sizeof(float));
-        writeCostToFile(costCsv,predictCsv,theta,x,y,xVal,yVal,i);          
+        writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,i);          
     }
 }
-void gradientDescMiniBAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv){
+void gradientDescMiniBAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv,FILE *fpTime,FILE *fpTimePred){
     int masterIt = 1; 
     bool stop = false;
+    float ts = 0;
     for(int i = 1;i<=ITER && !stop;i++){
         for(int b = 0;b<EXAMPLES && !stop;b+=BATCHSIZE){
         	future<float> hold[FEATURES];
@@ -255,14 +263,14 @@ void gradientDescMiniBAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
             	theta[j] = theta[j] - (ALPHA*sum)/BATCHSIZE;
             	stop = isNan(theta[j]);
 		    }		        
-            writeCostToFile(costCsv,predictCsv,theta,x,y,xVal,yVal,masterIt);
+            writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,masterIt);
             masterIt++;
         }
     }
 }
-void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv){
+void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv,FILE *fpTime,FILE *fpTimePred){
     float oldTheta[FEATURES];
-   
+    float ts = 0;
     int masterIt = 1;  
     bool stop = false;
     for(int i = 1;i<=ITER && !stop;i++){
@@ -273,21 +281,18 @@ void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXF
                 stop = isNan(oldTheta[j]);
             }        
             memcpy(theta,oldTheta,FEATURES*sizeof(float));  
-            writeCostToFile(costCsv,predictCsv,theta,x,y,xVal,yVal,masterIt);         
+            writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,masterIt);         
 			masterIt++;       
         }
     }
 }
 /*Gradient descent timed functions */
-void gradientDescBatchAsyncTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv){
+void gradientDescBatchAsyncTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv,FILE *fpTime,FILE *fpTimePred){
 	int i = 1; 
     auto Start = chrono::high_resolution_clock::now(); 
     bool stop = false;
-    while(!stop){
-        auto End = chrono::high_resolution_clock::now();
-		chrono::duration<double, milli> Elapsed = End - Start;
-		if (Elapsed.count() >= TIME)
-			break;
+    float ts = 0;
+    while(!stop){        
     	future<float> hold[FEATURES];
         for(int j = 0;j<FEATURES;j++){
             hold[j] = async(launch::async,summation,x,y,xt[j],theta,0,EXAMPLES);
@@ -296,61 +301,73 @@ void gradientDescBatchAsyncTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],flo
         	float sum = hold[j].get();
         	theta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
         	stop = isNan(theta[j]);
-		}     
-        writeCostToFile(costCsv,predictCsv,theta,x,y,xVal,yVal,i);
-        i++;
-    }
-}
-void gradientDescBatchTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv){
-    float oldTheta[FEATURES];    
-	int i = 0; 
-	bool stop = false;
-    auto Start = chrono::high_resolution_clock::now(); 
-    while(!stop){
-        auto End = chrono::high_resolution_clock::now();
+		}  
+		auto End = chrono::high_resolution_clock::now();
 		chrono::duration<double, milli> Elapsed = End - Start;
 		if (Elapsed.count() >= TIME)
 			break;
+	    ts = Elapsed.count();   
+        writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,i);
+        i++;
+    }
+}
+void gradientDescBatchTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv,FILE *fpTime,FILE *fpTimePred){
+    float oldTheta[FEATURES];    
+	int i = 0; 
+	float ts = 0;
+	bool stop = false;
+    auto Start = chrono::high_resolution_clock::now(); 
+    while(!stop){
+      
         for(int j = 0;j<FEATURES && !stop;j++){
             float sum = summation(x,y,xt[j],theta,0,EXAMPLES);
             oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
             stop = isNan(oldTheta[j]);
         }        
         memcpy(theta,oldTheta,FEATURES*sizeof(float));  
-        writeCostToFile(costCsv,predictCsv,theta,x,y,xVal,yVal,i);
-		i++;         
-    }
-}
-void gradientDescStochasticTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv){
-    float oldTheta[FEATURES];    
-    auto Start = chrono::high_resolution_clock::now(); 
-    int i = 1;
-    bool stop = false;
-    while(!stop){
         auto End = chrono::high_resolution_clock::now();
 		chrono::duration<double, milli> Elapsed = End - Start;
 		if (Elapsed.count() >= TIME)
 			break;
+	    ts = Elapsed.count();   
+        writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,i);
+		i++;         
+    }
+}
+void gradientDescStochasticTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv,FILE *fpTime,FILE *fpTimePred){
+    float oldTheta[FEATURES];    
+    auto Start = chrono::high_resolution_clock::now(); 
+    int i = 1;
+    float ts = 0;
+    bool stop = false;
+    while(!stop){
+       
         float func = h(x[i%EXAMPLES],theta);
         for(int j = 0;j<FEATURES && !stop;j++){            
             oldTheta[j] = theta[j] - ALPHA*(func-y[(i-1)%EXAMPLES])*xt[j][(i-1)%EXAMPLES];  
 			stop = isNan(oldTheta[j]); 
         }        
         memcpy(theta,oldTheta,FEATURES*sizeof(float));
-        writeCostToFile(costCsv,predictCsv,theta,x,y,xVal,yVal,i);
-        i++;
-    }
-}
-void gradientDescMiniBAsyncTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv){
-      
-    int masterIt = 1; 
-    bool stop = false;
-     auto Start = chrono::high_resolution_clock::now(); 
-     while(!stop){
         auto End = chrono::high_resolution_clock::now();
 		chrono::duration<double, milli> Elapsed = End - Start;
 		if (Elapsed.count() >= TIME)
 			break;
+	    ts = Elapsed.count();
+        writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,i);
+        i++;
+    }
+}
+void gradientDescMiniBAsyncTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv,FILE *fpTime,FILE *fpTimePred){
+    float ts;
+    int masterIt = 1; 
+    bool stop = false;
+    auto Start = chrono::high_resolution_clock::now(); 
+    while(!stop){
+        auto End = chrono::high_resolution_clock::now();
+        chrono::duration<double, milli> Elapsed = End - Start;
+        if (Elapsed.count() >= TIME)
+	        break;
+        ts = Elapsed.count();
         for(int b = 0;b<EXAMPLES && !stop;b+=BATCHSIZE){
         	future<float> hold[FEATURES];
             for(int j = 0;j<FEATURES;j++){
@@ -360,40 +377,44 @@ void gradientDescMiniBAsyncTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],flo
             	float sum = hold[j].get();
             	theta[j] = theta[j] - (ALPHA*sum)/BATCHSIZE;
             	stop = isNan(theta[j]);
-		    }		        
-            writeCostToFile(costCsv,predictCsv,theta,x,y,xVal,yVal,masterIt);
-            
-            auto End2 = chrono::high_resolution_clock::now();
-		    chrono::duration<double, milli> Elapsed = End2 - Start;
-		    if (Elapsed.count() >= TIME)
-			    break;
-			masterIt++;
+	        }		
+	        auto End2 = chrono::high_resolution_clock::now();
+	        chrono::duration<double, milli> Elapsed2 = End2 - Start;
+	        if (Elapsed2.count() >= TIME)
+		        break;
+		    ts = Elapsed2.count();        
+            writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,masterIt);            
+		    masterIt++;
         }
     }
 }
 
-void gradientDescMiniBTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv){
+void gradientDescMiniBTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[], FILE *costCsv, FILE *predictCsv,FILE *fpTime,FILE *fpTimePred){
     float oldTheta[FEATURES];
     int masterIt = 1;  
     bool stop = false;
+    float ts = 0;
     auto Start = chrono::high_resolution_clock::now(); 
     while(!stop){
         auto End = chrono::high_resolution_clock::now();
 		chrono::duration<double, milli> Elapsed = End - Start;
 		if (Elapsed.count() >= TIME)
 			break;
+		ts = Elapsed.count();
         for(int b = 0;b<FEATURES && !stop;b+=BATCHSIZE){
             for(int j = 0;j<FEATURES && !stop;j++){
                 float sum = summation(x,y,xt[j],theta,b,b+BATCHSIZE-1);
                 oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
                 stop = isNan(oldTheta[j]);                
             }        
-            memcpy(theta,oldTheta,FEATURES*sizeof(float));  
-            writeCostToFile(costCsv,predictCsv,theta,x,y,xVal,yVal,masterIt);
+            memcpy(theta,oldTheta,FEATURES*sizeof(float));
             auto End2 = chrono::high_resolution_clock::now();
-		    chrono::duration<double, milli> Elapsed = End2 - Start;
-		    if (Elapsed.count() >= TIME)
-			    break;
+		    chrono::duration<double, milli> Elapsed2 = End2 - Start;
+		    if (Elapsed2.count() >= TIME)
+			    break;  
+			ts = Elapsed2.count();
+            writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,masterIt);
+           
 			masterIt++;
         }
     }
@@ -432,11 +453,12 @@ int main(int argc, char** argv){
             return 0;
         }
     }
-	FILE *costCsv = fopen("costs.csv", "w+");
-    FILE *costPredCsv;
-    if(DOVALIDATE)
+	FILE *costCsv = fopen("costs.csv", "w+"), *timeCsv = fopen("times.csv", "w+");
+    FILE *costPredCsv, *timePredCsv;
+    if(DOVALIDATE){
         costPredCsv = fopen("predictCosts.csv", "w+");
-	
+	    timePredCsv = fopen("predictTimes.csv", "w+");
+	}
     if(FEATURES <= 0){printf("Por favor, use um número positivo de features!\n");return 0;}
     if(EXAMPLES <= 0){printf("Por favor, use um número positivo de exemplos de treino!\n");return 0;}
     if(VALIDATE <= 0){printf("Por favor, use um número positivo de exemplos de validacao!\n");return 0;}
@@ -454,30 +476,30 @@ int main(int argc, char** argv){
 	if(MINIBATCH){
         if(!ASYNC)
         	if(!TIME)
-        		gradientDescMiniB(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv);
+        		gradientDescMiniB(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv,timeCsv,timePredCsv);
         	else
-        		gradientDescMiniBTimed(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv);
+        		gradientDescMiniBTimed(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv,timeCsv,timePredCsv);
 		else
         	if(!TIME)
-        		gradientDescMiniBAsync(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv);
+        		gradientDescMiniBAsync(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv,timeCsv,timePredCsv);
         	else
-        		gradientDescMiniBAsyncTimed(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv);
+        		gradientDescMiniBAsyncTimed(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv,timeCsv,timePredCsv);
     }else if(SGD){
         if(!TIME)
-        	gradientDescStochastic(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv);
+        	gradientDescStochastic(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv,timeCsv,timePredCsv);
         else
-        	gradientDescStochasticTimed(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv);    
+        	gradientDescStochasticTimed(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv,timeCsv,timePredCsv);    
     }else{
         if(!ASYNC)
         	if(!TIME)
-        		gradientDescBatch(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv);
+        		gradientDescBatch(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv,timeCsv,timePredCsv);
         	else
-        		gradientDescBatchTimed(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv);
+        		gradientDescBatchTimed(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv,timeCsv,timePredCsv);
 		else
         	if(!TIME)
-        		gradientDescBatchAsync(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv);
+        		gradientDescBatchAsync(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv,timeCsv,timePredCsv);
         	else
-        		gradientDescBatchAsyncTimed(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv);
+        		gradientDescBatchAsyncTimed(traindata,label,dataTransp,dataVal,labelVal,theta,costCsv,costPredCsv,timeCsv,timePredCsv);
     }
     
     closeFiles(costCsv,costPredCsv,theta,dataVal,labelVal);
