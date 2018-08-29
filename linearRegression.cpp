@@ -13,6 +13,7 @@ int ASYNC = 0;
 int MINIBATCH = 0;
 int BATCHSIZE = 32;
 float ALPHA = 0.00027;
+float TIME  = 0;
 const int MAXEXAMPLES = 50000;
 const int MAXFEATURES = 10;
 const int MAXVALIDATE = 10000;
@@ -302,6 +303,148 @@ void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXF
     }
 	closeFiles(fp,fpPred,theta,xVal,yVal);
 }
+/*Gradient descent timed functions */
+void gradientDescBatchAsyncTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[]){
+    FILE *fp = fopen("costs.csv", "w+");
+    FILE *fpPred;
+    if(DOVALIDATE)
+         fpPred = fopen("predictCosts.csv", "w+");
+    if(RANDTHETA)
+        for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;    
+    auto Start = std::chrono::high_resolution_clock::now(); 
+    while(1){
+        auto End = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double, std::milli> Elapsed = End - Start;
+		if (Elapsed.count() >= TIME)
+			break;
+    	future<float> hold[FEATURES];
+        for(int j = 0;j<FEATURES;j++){
+            hold[j] = async(launch::async,summation,x,y,xt[j],theta,0,EXAMPLES);
+        }        
+        for(int j = 0;j<FEATURES;j++){
+        	float sum = hold[j].get();
+        	theta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
+		}     
+        writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,i);
+    }
+    closeFiles(fp,fpPred,theta,xVal,yVal);
+}
+void gradientDescBatchTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[]){
+    FILE *fp = fopen("costs.csv", "w+");
+    FILE *fpPred;
+    if(DOVALIDATE)
+         fpPred = fopen("predictCosts.csv", "w+");
+    float oldTheta[FEATURES];
+    if(RANDTHETA)
+        for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;     
+    auto Start = std::chrono::high_resolution_clock::now(); 
+    while(1){
+        auto End = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double, std::milli> Elapsed = End - Start;
+		if (Elapsed.count() >= TIME)
+			break;
+        for(int j = 0;j<FEATURES;j++){
+            float sum = summation(x,y,xt[j],theta,0,EXAMPLES);
+            oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
+        }        
+        memcpy(theta,oldTheta,FEATURES*sizeof(float));  
+        if(!writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,i)){
+            break;
+        }
+    }
+	closeFiles(fp,fpPred,theta,xVal,yVal);
+}
+void gradientDescStochasticTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[]){
+    FILE *fp = fopen("costs.csv", "w+");     FILE *fpPred;
+    if(DOVALIDATE)
+         fpPred = fopen("predictCosts.csv", "w+");
+    float oldTheta[FEATURES];
+    if(RANDTHETA)
+        for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;     
+    auto Start = std::chrono::high_resolution_clock::now(); 
+    while(1){
+        auto End = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double, std::milli> Elapsed = End - Start;
+		if (Elapsed.count() >= TIME)
+			break;
+        float func = h(x[i%EXAMPLES],theta);
+        for(int j = 0;j<FEATURES;j++){            
+            oldTheta[j] = theta[j] - ALPHA*(func-y[i%EXAMPLES])*xt[j][i%EXAMPLES];   
+        }        
+        memcpy(theta,oldTheta,FEATURES*sizeof(float));
+        if(!writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,i)){
+            break;
+        }
+    }
+    closeFiles(fp,fpPred,theta,xVal,yVal);
+}
+void gradientDescMiniBAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[]){
+    FILE *fp = fopen("costs.csv", "w+");
+    FILE *fpPred;
+    if(DOVALIDATE)
+         fpPred = fopen("predictCosts.csv", "w+");
+    float alpha = 0.00027;
+    if(RANDTHETA)
+        for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;    
+    int masterIt = 0; 
+     auto Start = std::chrono::high_resolution_clock::now(); 
+     while(1){
+        auto End = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double, std::milli> Elapsed = End - Start;
+		if (Elapsed.count() >= TIME)
+			break;
+        for(int b = 0;b<EXAMPLES;b+=BATCHSIZE){
+        	future<float> hold[FEATURES];
+            for(int j = 0;j<FEATURES;j++){
+                hold[j] = async(launch::async,summation,x,y,xt[j],theta,b,b+BATCHSIZE-1);
+            }        
+            for(int j = 0;j<FEATURES;j++){
+            	float sum = hold[j].get();
+            	theta[j] = theta[j] - (ALPHA*sum)/BATCHSIZE;
+		    }		        
+            if(!writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,masterIt++)){
+                break;
+            }
+            auto End2 = std::chrono::high_resolution_clock::now();
+		    std::chrono::duration<double, std::milli> Elapsed = End2 - Start;
+		    if (Elapsed.count() >= TIME)
+			    break;
+        }
+    }
+    closeFiles(fp,fpPred,theta,xVal,yVal);
+}
+void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXFEATURES][MAXEXAMPLES],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],float theta[]){
+    FILE *fp = fopen("costs.csv", "w+");
+    FILE *fpPred;
+    if(DOVALIDATE)
+         fpPred = fopen("predictCosts.csv", "w+");
+    float oldTheta[FEATURES];
+    if(RANDTHETA)
+        for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;    
+    int masterIt = 0;  
+    auto Start = std::chrono::high_resolution_clock::now(); 
+     while(1){
+        auto End = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double, std::milli> Elapsed = End - Start;
+		if (Elapsed.count() >= TIME)
+			break;
+        for(int b = 0;b<FEATURES;b+=BATCHSIZE){
+            for(int j = 0;j<FEATURES;j++){
+                float sum = summation(x,y,xt[j],theta,b,b+BATCHSIZE-1);
+                oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
+            }        
+            memcpy(theta,oldTheta,FEATURES*sizeof(float));  
+            if(!writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,masterIt++)){
+                break;
+            }
+             auto End2 = std::chrono::high_resolution_clock::now();
+		    std::chrono::duration<double, std::milli> Elapsed = End2 - Start;
+		    if (Elapsed.count() >= TIME)
+			    break;
+        }
+    }
+	closeFiles(fp,fpPred,theta,xVal,yVal);
+}
 /*Main*/
 int main(int argc, char** argv){
     float traindata[MAXEXAMPLES][MAXFEATURES],label[MAXEXAMPLES],dataTransp[MAXFEATURES][MAXEXAMPLES],dataVal[MAXVALIDATE][MAXFEATURES],labelVal[MAXVALIDATE],theta[FEATURES];       
@@ -325,6 +468,7 @@ int main(int argc, char** argv){
         else if(args[0] == "-stochasticdesc" || args[0] == "-sgd") SGD = strToNum<int>(args[1]);
         else if(args[0] == "-randtheta" || args[0] == "-rt") RANDTHETA = strToNum<int>(args[1]);
         else if(args[0] == "-minibatch" || args[0] == "-mb") MINIBATCH = strToNum<int>(args[1]);
+        else if(args[0] == "-timed" || args[0] == "-time") TIME = strToNum<float>(args[1]);
         else if(args[0] == "-batchsize" || args[0] == "-bs") BATCHSIZE = strToNum<int>(args[1]);
         else if(args[0] == "-async" || args[0] == "-as") ASYNC = strToNum<int>(args[1]);
         else if(args[0] == "-help" || args[0] == "-h"){
