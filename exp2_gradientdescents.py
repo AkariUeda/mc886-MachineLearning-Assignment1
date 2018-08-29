@@ -19,7 +19,7 @@ def shape_csv(name):
 def main():
 
     # Adjusting training parameters
-    iteracoes = 50000
+    iteracoes = 100
     alpha = [0.2, 0.002, 0.0002]
    
     #Plot settings
@@ -41,11 +41,12 @@ def main():
             prog=[]
             prog.append("./linearRegressionFlex")
             prog.append("-a="+str(alpha[a]))
-            prog.append("-i="+str(iteracoes))
+            #prog.append("-i="+str(iteracoes))
             prog.append("-dvl=1")
             prog.append(gradients[g])
             prog.append("-async=1")
             prog.append("-vr=0")
+            prog.append("-time=10")
 
             #Executes the call for C code
             call(prog)

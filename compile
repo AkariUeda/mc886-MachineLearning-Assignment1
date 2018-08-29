@@ -1,0 +1,1 @@
+g++ linearRegression.cpp -o linearRegressionFlex -Ofast -pthread -std=c++17
