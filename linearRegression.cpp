@@ -286,7 +286,8 @@ void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXF
          fpPred = fopen("predictCosts.csv", "w+");
     float oldTheta[FEATURES];
     if(RANDTHETA)
-        for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;     
+        for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;    
+    int masterIt = 0;  
     for(int i = 1;i<=ITER;i++){
         for(int b = 0;b<FEATURES;b+=BATCHSIZE){
             for(int j = 0;j<FEATURES;j++){
@@ -294,7 +295,7 @@ void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXF
                 oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
             }        
             memcpy(theta,oldTheta,FEATURES*sizeof(float));  
-            if(!writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,i)){
+            if(!writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,masterIt++)){
                 break;
             }
         }
