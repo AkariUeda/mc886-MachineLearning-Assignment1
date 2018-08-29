@@ -274,10 +274,10 @@ void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXF
     int masterIt = 1;  
     bool stop = false;
     for(int i = 1;i<=ITER && !stop;i++){
-        for(int b = 0;b<FEATURES && !stop;b+=BATCHSIZE){
+        for(int b = 0;b<EXAMPLES && !stop;b+=BATCHSIZE){
             for(int j = 0;j<FEATURES && !stop;j++){
                 float sum = summation(x,y,xt[j],theta,b,b+BATCHSIZE-1);
-                oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
+                oldTheta[j] = theta[j] - (ALPHA*sum)/BATCHSIZE;
                 stop = isNan(oldTheta[j]);
             }        
             memcpy(theta,oldTheta,FEATURES*sizeof(float));  
@@ -299,7 +299,7 @@ void gradientDescBatchAsyncTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],flo
         }        
         for(int j = 0;j<FEATURES && !stop;j++){
         	float sum = hold[j].get();
-        	theta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
+        	theta[j] = theta[j] - (ALPHA*sum)/BATCHSIZE;
         	stop = isNan(theta[j]);
 		}  
 		auto End = chrono::high_resolution_clock::now();
@@ -321,7 +321,7 @@ void gradientDescBatchTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
       
         for(int j = 0;j<FEATURES && !stop;j++){
             float sum = summation(x,y,xt[j],theta,0,EXAMPLES);
-            oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
+            oldTheta[j] = theta[j] - (ALPHA*sum)/BATCHSIZE;
             stop = isNan(oldTheta[j]);
         }        
         memcpy(theta,oldTheta,FEATURES*sizeof(float));  
@@ -401,7 +401,7 @@ void gradientDescMiniBTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
 		if (Elapsed.count() >= TIME)
 			break;
 		ts = Elapsed.count();
-        for(int b = 0;b<FEATURES && !stop;b+=BATCHSIZE){
+        for(int b = 0;b<EXAMPLES && !stop;b+=BATCHSIZE){
             for(int j = 0;j<FEATURES && !stop;j++){
                 float sum = summation(x,y,xt[j],theta,b,b+BATCHSIZE-1);
                 oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
