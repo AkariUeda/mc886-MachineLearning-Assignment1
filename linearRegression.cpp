@@ -156,12 +156,12 @@ void predict(float x[MAXEXAMPLES][MAXFEATURES],float y[],float theta[]){
     printf("Custo predito: %f\n",cost(theta,y,x));
     fclose(fp );
 }
-void writeInfo(FILE *fp,float cus,int i,bool isPred){
+void writeInfo(FILE *fp,float cus,int i,bool isPred, bool ts){
 	char s[2048];
 	if(i == 1) sprintf(s,"\"%f\"",cus);   
 	else sprintf(s,",\"%f\"",cus);   
 	fputs(s,fp);      
-	if(VERBOSE && i%HOWVERBOSE == 0){
+	if(!ts && VERBOSE && i%HOWVERBOSE == 0){
 	    if(isPred)
 	        printf("Iteracao %6d: custo predito de %f\n",i,cus); 
 	    else
@@ -180,14 +180,14 @@ void writeTheta(float theta[]){
 }
 bool writeCostToFile(FILE *fp,FILE *fpPred,FILE *fpTime,FILE *fpTimePred,float ts,float theta[],float x[MAXEXAMPLES][MAXFEATURES],float y[],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],int i){
     float cus = cost(theta,y,x);
-    writeInfo(fp,cus,i,false);
+    writeInfo(fp,cus,i,false,false);
     if(TIME)
-        writeInfo(fpTime,ts,i,false);
+        writeInfo(fpTime,ts,i,false,true);
     if(DOVALIDATE){
         float cusPred = cost(theta,yVal,xVal);
-        writeInfo(fpPred,cusPred,i,true);
+        writeInfo(fpPred,cusPred,i,true,false);
         if(TIME)
-            writeInfo(fpTimePred,ts,i,false);
+            writeInfo(fpTimePred,ts,i,false,true);
     }  
     return true;
 }
@@ -299,7 +299,7 @@ void gradientDescBatchAsyncTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],flo
         }        
         for(int j = 0;j<FEATURES && !stop;j++){
         	float sum = hold[j].get();
-        	theta[j] = theta[j] - (ALPHA*sum)/BATCHSIZE;
+        	theta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
         	stop = isNan(theta[j]);
 		}  
 		auto End = chrono::high_resolution_clock::now();
@@ -321,7 +321,7 @@ void gradientDescBatchTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
       
         for(int j = 0;j<FEATURES && !stop;j++){
             float sum = summation(x,y,xt[j],theta,0,EXAMPLES);
-            oldTheta[j] = theta[j] - (ALPHA*sum)/BATCHSIZE;
+            oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
             stop = isNan(oldTheta[j]);
         }        
         memcpy(theta,oldTheta,FEATURES*sizeof(float));  
@@ -404,7 +404,7 @@ void gradientDescMiniBTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
         for(int b = 0;b<EXAMPLES && !stop;b+=BATCHSIZE){
             for(int j = 0;j<FEATURES && !stop;j++){
                 float sum = summation(x,y,xt[j],theta,b,b+BATCHSIZE-1);
-                oldTheta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
+                oldTheta[j] = theta[j] - (ALPHA*sum)/BATCHSIZE;
                 stop = isNan(oldTheta[j]);                
             }        
             memcpy(theta,oldTheta,FEATURES*sizeof(float));
