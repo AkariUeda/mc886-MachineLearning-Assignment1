@@ -73,6 +73,7 @@ def main():
                 valid_plot.plot(range(100,iteracoes), predictions[0, 100:], cores[a], label='SGD ' + str(alpha[a]), linestyle='-')
             elif g==2:
                 valid_plot.plot(range(100,iteracoes), predictions[0, 100:], cores[a], label='MiniBatch ' + str(alpha[a]), linestyle=':')
+
     train_plot.legend()
     valid_plot.legend()
     fig_train.show()

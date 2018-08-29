@@ -20,7 +20,7 @@ def main():
 
     # Adjusting training parameters
     iteracoes = 20000
-    alpha = [0.2]
+    alpha = [0.2, 0.02, 0.002, 0.0002]
    
     #Plot settings
     matplotlib.style.use('seaborn')
