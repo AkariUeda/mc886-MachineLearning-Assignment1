@@ -41,7 +41,7 @@ def main():
             prog=[]
             prog.append("./linearRegressionFlex")
             prog.append("-a="+str(alpha[a]))
-            #prog.append("-time="+str(time))
+            prog.append("-time="+str(time))
             
             prog.append("-dvl=1")
             prog.append(gradients[g])
@@ -49,32 +49,32 @@ def main():
             prog.append("-vr=0")
 
             #Executes the call for C code
+            print(prog)            
             call(prog)
-
+            
             #train_lr(theta, train_features, train_labels, iterations, alpha)
-            costs = shape_csv('costs.csv')
             theta = shape_csv('theta.csv')
+            if not np.isfinite(theta[0]).all():
+                continue 
+            costs = shape_csv('costs.csv')
             predictions = shape_csv('predictCosts.csv')
             timestamps = shape_csv('times.csv')
 
             #Plotting
-            if not np.isfinite(costs[0]).all(): 
-                continue
-            elif g==0:
-                train_plot.plot(timestamps[0,100:], costs[0, 100:], cores[a], label='Batch ' + str(alpha[a]), linestyle='--')
+
+            if g==0:
+                train_plot.plot(timestamps[0], costs[0], cores[a], label='Batch ' + str(alpha[a]), linestyle='--')
             #elif g==1:
             #    train_plot.plot(timestamps[0,100:], costs[0, 100:], cores[a], label='SGD ' + str(alpha[a]), linestyle='-')
             elif g==1:
-                train_plot.plot(timestamps[0,100:], costs[0, 100:], cores[a], label='MiniBatch ' + str(alpha[a]), linestyle=':')
-               
-            if not np.isfinite(predictions[0]).all(): 
-                continue
-            elif g==0:
-                valid_plot.plot(timestamps[0,100:], predictions[0, 100:], cores[a], label='Batch ' + str(alpha[a]), linestyle='--')
+                train_plot.plot(timestamps[0], costs[0], cores[a], label='MiniBatch ' + str(alpha[a]), linestyle=':')
+
+            if g==0:
+                valid_plot.plot(timestamps[0], predictions[0], cores[a], label='Batch ' + str(alpha[a]), linestyle='--')
             #elif g==1:
             #    valid_plot.plot(timestamps[0,100:], predictions[0, 100:], cores[a], label='SGD ' + str(alpha[a]), linestyle='-')
             elif g==1:
-                valid_plot.plot(timestamps[0,100:], predictions[0, 100:], cores[a], label='MiniBatch ' + str(alpha[a]), linestyle=':')
+                valid_plot.plot(timestamps[0], predictions[0], cores[a], label='MiniBatch ' + str(alpha[a]), linestyle=':')
 
     train_plot.legend()
     valid_plot.legend()
