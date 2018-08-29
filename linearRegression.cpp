@@ -209,7 +209,7 @@ void gradientDescBatchAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
         for(int j = 0;j<FEATURES;j++){
         	float sum = hold[j].get();
         	theta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
-		}        
+		}     
         writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,i);
     }
     closeFiles(fp,fpPred,theta,xVal,yVal);
@@ -241,13 +241,12 @@ void gradientDescStochastic(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
     float oldTheta[FEATURES];
     if(RANDTHETA)
         for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;     
-    for(int i = 1;i<=ITER;i++){
-        for(int m = 0;m<EXAMPLES;m++){
-            for(int j = 0;j<FEATURES;j++){            
-                oldTheta[j] = theta[j] - ALPHA*(h(x[m],theta)-y[m])*xt[j][m];   
-            }        
-            memcpy(theta,oldTheta,FEATURES*sizeof(float));
-        }            
+    for(int i = 0;i<ITER;i++){        
+        float func = h(x[i%EXAMPLES],theta);
+        for(int j = 0;j<FEATURES;j++){            
+            oldTheta[j] = theta[j] - ALPHA*(func-y[i%EXAMPLES])*xt[j][i%EXAMPLES];   
+        }        
+        memcpy(theta,oldTheta,FEATURES*sizeof(float));
         if(!writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,i)){
             break;
         }
@@ -261,18 +260,19 @@ void gradientDescMiniBAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
          fpPred = fopen("predictCosts.csv", "w+");
     float alpha = 0.00027;
     if(RANDTHETA)
-        for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;     
+        for(int i = 0;i<FEATURES;i++) theta[i] = rand()%1663;    
+    int masterIt = 0; 
     for(int i = 1;i<=ITER;i++){
-        for(int b = 0;b<FEATURES;b+=BATCHSIZE){
+        for(int b = 0;b<EXAMPLES;b+=BATCHSIZE){
         	future<float> hold[FEATURES];
             for(int j = 0;j<FEATURES;j++){
                 hold[j] = async(launch::async,summation,x,y,xt[j],theta,b,b+BATCHSIZE-1);
             }        
             for(int j = 0;j<FEATURES;j++){
             	float sum = hold[j].get();
-            	theta[j] = theta[j] - (ALPHA*sum)/EXAMPLES;
-		    }        
-            if(!writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,i)){
+            	theta[j] = theta[j] - (ALPHA*sum)/BATCHSIZE;
+		    }		        
+            if(!writeCostToFile(fp,fpPred,theta,x,y,xVal,yVal,masterIt++)){
                 break;
             }
         }
