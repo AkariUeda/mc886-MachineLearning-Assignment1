@@ -55,9 +55,9 @@ def main():
 
     #Plotting
     if np.isfinite(costs[0]).all(): 
-        train_plot.plot(range(0,iteracoes), costs[0], cores[0], label=str(alpha), linestyle='-')
+        train_plot.plot(range(0,iteracoes)/1000, costs[0], cores[0], label=str(alpha), linestyle='-')
     if np.isfinite(predictions[0]).all(): 
-        valid_plot.plot(range(0,iteracoes), predictions[0], cores[0], label=str(alpha), linestyle='-')
+        valid_plot.plot(range(0,iteracoes)/1000, predictions[0], cores[0], label=str(alpha), linestyle='-')
 
     train_plot.legend()
     valid_plot.legend()
