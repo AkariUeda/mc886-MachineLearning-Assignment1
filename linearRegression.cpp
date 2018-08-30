@@ -159,7 +159,7 @@ void predict(float x[MAXEXAMPLES][MAXFEATURES],float y[],float theta[]){
 void writeInfo(FILE *fp,float cus,int i,bool isPred, bool ts){
 	char s[2048];
 	if(i == 1) sprintf(s,"\"%f\"",cus);   
-	else sprintf(s,",\"%f\"",cus);   
+	else if(i%100 == 0) sprintf(s,",\"%f\"",cus);   
 	fputs(s,fp);      
 	if(!ts && VERBOSE && i%HOWVERBOSE == 0){
 	    if(isPred)
