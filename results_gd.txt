@@ -1,0 +1,28 @@
+bash-4.4$ python3 exp2_gradientdescents.py batch 120
+Learning rate: 0.02
+   Training cost: 893220.5625
+   Validation cost: 2940283.25
+Learning rate: 0.002
+   Training cost: 2112703.5
+   Validation cost: 2467829.75
+Learning rate: 0.0002
+   Training cost: 5191905.0
+   Validation cost: 5710177.0
+bash-4.4$ python3 exp2_gradientdescents.py sgd 120
+Learning rate: 0.002
+   Training cost: 907552.25
+   Validation cost: 12698452.0
+Learning rate: 0.0002
+   Training cost: 1137150.25
+   Validation cost: 2110703.5
+bash-4.4$ python3 exp2_gradientdescents.py minibatch 120
+Learning rate: 0.02
+   Training cost: 4619228.5
+   Validation cost: 4721199.0
+Learning rate: 0.002
+   Training cost: 3284409.25
+   Validation cost: 3963661.5
+Learning rate: 0.0002
+   Training cost: 2358915.5
+   Validation cost: 2764321.5
+

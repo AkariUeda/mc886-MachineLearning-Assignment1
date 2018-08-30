@@ -19,8 +19,8 @@ def shape_csv(name):
 def main():
 
     # Adjusting training parameters
-    iteracoes = sys.argv[1]
-    alpha = sys.argv[2]
+    iteracoes = int(sys.argv[1])
+    alpha =float(sys.argv[2])
     gradient = sys.argv[3]
     
     #Plot settings
@@ -57,9 +57,9 @@ def main():
     #timestamps = shape_csv('times.csv')
     #Plotting
     if np.isfinite(costs[0]).all(): 
-        train_plot.plot(range(0,iteracoes,100), costs[0], cores[0], label=str(alpha), linestyle='-')
+        train_plot.plot(range(0,iteracoes), costs[0], cores[0], label=str(alpha), linestyle='-')
     if np.isfinite(predictions[0]).all(): 
-        valid_plot.plot(range(0,iteracoes,100), predictions[0], cores[1], label=str(alpha), linestyle='-')
+        valid_plot.plot(range(0,iteracoes), predictions[0], cores[1], label=str(alpha), linestyle='-')
 
     train_plot.legend()
     valid_plot.legend()

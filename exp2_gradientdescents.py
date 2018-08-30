@@ -73,7 +73,6 @@ def main():
         costs = shape_csv('costs.csv')
         predictions = shape_csv('predictCosts.csv')
         timestamps = shape_csv('times.csv')
-#        print(timestamps.shape)
 
         #Plotting
         train_plot.plot(timestamps[0]/1000, costs[0], cores[a], label=gradient+ " " +str(alpha[a]), linestyle='-')
