@@ -159,8 +159,10 @@ void predict(float x[MAXEXAMPLES][MAXFEATURES],float y[],float theta[]){
 void writeInfo(FILE *fp,float cus,int i,bool isPred, bool ts){
 	char s[2048];
 	if(i == 1) sprintf(s,"\"%f\"",cus);   
-	else if(i%100 == 0) sprintf(s,",\"%f\"",cus);   
-	fputs(s,fp);      
+	else if(i%100 == 0){ 
+	    sprintf(s,",\"%f\"",cus);   
+	    fputs(s,fp);      
+	}
 	if(!ts && VERBOSE && i%HOWVERBOSE == 0){
 	    if(isPred)
 	        printf("Iteracao %6d: custo predito de %f\n",i,cus); 
