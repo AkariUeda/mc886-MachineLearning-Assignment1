@@ -173,7 +173,10 @@ void writeTheta(float theta[]){
     for(int i = 0;i<FEATURES;i++){
     	float val = theta[i];  
         char s[2048];
-		sprintf(s,"\"%f\",",val);   
+        if(i == 0)
+		    sprintf(s,"\"%f\"",val);
+		else
+		    sprintf(s,",\"%f\"",val); 
     	fputs(s,th);   
 	}	
     fclose(th);
@@ -353,7 +356,8 @@ void gradientDescStochasticTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],flo
 		if (Elapsed.count() >= TIME)
 			break;
 	    ts = Elapsed.count();
-        writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,i);
+	    if(i%100==0)
+            writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,i);
         i++;
     }
 }
@@ -382,8 +386,9 @@ void gradientDescMiniBAsyncTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],flo
 	        chrono::duration<double, milli> Elapsed2 = End2 - Start;
 	        if (Elapsed2.count() >= TIME)
 		        break;
-		    ts = Elapsed2.count();        
-            writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,masterIt);            
+		    ts = Elapsed2.count(); 
+		    if(masterIt%100==0)       
+                writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,masterIt);            
 		    masterIt++;
         }
     }
@@ -413,7 +418,8 @@ void gradientDescMiniBTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
 		    if (Elapsed2.count() >= TIME)
 			    break;  
 			ts = Elapsed2.count();
-            writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,masterIt);
+			if(masterIt%100==0)
+                writeCostToFile(costCsv,predictCsv,fpTime,fpTimePred,ts,theta,x,y,xVal,yVal,masterIt);
            
 			masterIt++;
         }
