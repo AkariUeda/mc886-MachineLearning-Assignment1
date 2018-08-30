@@ -54,12 +54,13 @@ def main():
             
             #train_lr(theta, train_features, train_labels, iterations, alpha)
             theta = shape_csv('theta.csv')
-            if not np.isfinite(theta[0]).all():
+            print(theta)
+            if np.isfinite(theta[0]).all():
                 continue 
             costs = shape_csv('costs.csv')
             predictions = shape_csv('predictCosts.csv')
             timestamps = shape_csv('times.csv')
-
+            print(timestamps.shape)
             #Plotting
 
             if g==0:
