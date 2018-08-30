@@ -19,8 +19,8 @@ def shape_csv(name):
 def main():
 
     # Adjusting training parameters
-    time = 30
-    alpha = [0.2, 0.002, 0.0002]
+    time = 5
+    alpha = [0.2, 0.02, 0.002, 0.0002]
    
     #Plot settings
     matplotlib.style.use('seaborn')
@@ -32,8 +32,8 @@ def main():
     valid_plot.set_ylabel('Cost')
     valid_plot.set_xlabel('Time')
     cores = ['tab:blue',  'tab:green', 'tab:red', 'tab:orange', 'tab:purple', 'tab:brown']
-    #"-sgd=0", "-sgd=1", 
-    gradients = ["-mb=1"]
+    #"-sgd=1",    
+    gradients = ["-sgd=0", "-mb=1"]
 
     train_features, valid_features, train_labels, valid_labels = get_data(1)
     for g in range(0,len(gradients)):
@@ -42,38 +42,39 @@ def main():
             prog.append("./linearRegressionFlex")
             prog.append("-a="+str(alpha[a]))
             prog.append("-time="+str(time))
+            
             prog.append("-dvl=1")
             prog.append(gradients[g])
             prog.append("-async=1")
             prog.append("-vr=0")
 
             #Executes the call for C code
+            print(prog)            
             call(prog)
-
+            
             #train_lr(theta, train_features, train_labels, iterations, alpha)
-            costs = shape_csv('costs.csv')
             theta = shape_csv('theta.csv')
+            if not np.isfinite(theta[0]).all():
+                continue 
+            costs = shape_csv('costs.csv')
             predictions = shape_csv('predictCosts.csv')
             timestamps = shape_csv('times.csv')
 
             #Plotting
-            if not np.isfinite(costs[0]).all(): 
-                continue
-            #elif g==0:
-                #train_plot.plot(timestamps[0,100:], costs[0, 100:], cores[a], label='Batch ' + str(alpha[a]), linestyle='--')
+
+            if g==0:
+                train_plot.plot(timestamps[0], costs[0], cores[a], label='Batch ' + str(alpha[a]), linestyle='--')
             #elif g==1:
-                #train_plot.plot(timestamps[0,100:], costs[0, 100:], cores[a], label='SGD ' + str(alpha[a]), linestyle='-')
-            elif g==0:
-                train_plot.plot(timestamps[0,100:], costs[0, 100:], cores[a], label='MiniBatch ' + str(alpha[a]), linestyle=':')
-               
-            if not np.isfinite(predictions[0]).all(): 
-                continue
-            #elif g==0:
-            #    valid_plot.plot(timestamps[0,100:], predictions[0, 100:], cores[a], label='Batch ' + str(alpha[a]), linestyle='--')
+            #    train_plot.plot(timestamps[0,100:], costs[0, 100:], cores[a], label='SGD ' + str(alpha[a]), linestyle='-')
+            elif g==1:
+                train_plot.plot(timestamps[0], costs[0], cores[a], label='MiniBatch ' + str(alpha[a]), linestyle=':')
+
+            if g==0:
+                valid_plot.plot(timestamps[0], predictions[0], cores[a], label='Batch ' + str(alpha[a]), linestyle='--')
             #elif g==1:
             #    valid_plot.plot(timestamps[0,100:], predictions[0, 100:], cores[a], label='SGD ' + str(alpha[a]), linestyle='-')
-            elif g==0:
-                valid_plot.plot(timestamps[0,100:], predictions[0, 100:], cores[a], label='MiniBatch ' + str(alpha[a]), linestyle=':')
+            elif g==1:
+                valid_plot.plot(timestamps[0], predictions[0], cores[a], label='MiniBatch ' + str(alpha[a]), linestyle=':')
 
     train_plot.legend()
     valid_plot.legend()
