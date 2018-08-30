@@ -156,19 +156,13 @@ void predict(float x[MAXEXAMPLES][MAXFEATURES],float y[],float theta[]){
     printf("Custo predito: %f\n",cost(theta,y,x));
     fclose(fp );
 }
-void writeInfo(FILE *fp,float cus,int i,bool isPred, bool ts){
+void writeInfo(FILE *fp,float cus,int i,bool isPred){
 	char s[2048];
 	if(i == 1) sprintf(s,"\"%f\"",cus);   
-	else if(i%100 == 0){ 
-	    sprintf(s,",\"%f\"",cus);   
-	    fputs(s,fp);      
-	}
-	if(!ts && VERBOSE && i%HOWVERBOSE == 0){
-	    if(isPred)
-	        printf("Iteracao %6d: custo predito de %f\n",i,cus); 
-	    else
-	        printf("Iteracao %6d: custo de %f\n",i,cus);
-	}  
+	else{ 
+	    sprintf(s,",\"%f\"",cus);
+	}	   
+	fputs(s,fp);      
 }
 void writeTheta(float theta[]){
 	FILE *th = fopen("theta.csv", "w+");
@@ -185,14 +179,14 @@ void writeTheta(float theta[]){
 }
 bool writeCostToFile(FILE *fp,FILE *fpPred,FILE *fpTime,FILE *fpTimePred,float ts,float theta[],float x[MAXEXAMPLES][MAXFEATURES],float y[],float xVal[MAXVALIDATE][MAXFEATURES],float yVal[],int i){
     float cus = cost(theta,y,x);
-    writeInfo(fp,cus,i,false,false);
+    writeInfo(fp,cus,i,false);
     if(TIME)
-        writeInfo(fpTime,ts,i,false,true);
+        writeInfo(fpTime,ts,i,false);
     if(DOVALIDATE){
         float cusPred = cost(theta,yVal,xVal);
-        writeInfo(fpPred,cusPred,i,true,false);
+        writeInfo(fpPred,cusPred,i,true);
         if(TIME)
-            writeInfo(fpTimePred,ts,i,false,true);
+            writeInfo(fpTimePred,ts,i,false);
     }  
     return true;
 }
