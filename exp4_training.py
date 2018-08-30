@@ -3,7 +3,7 @@ from numpy import linalg
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
-
+import sys
 import warnings
 from get_dataset import get_data
 from subprocess import call
@@ -19,19 +19,21 @@ def shape_csv(name):
 def main():
 
     # Adjusting training parameters
-    iteracoes = 1000
-    alpha = 0.002
-   
+    iteracoes = sys.argv[1]
+    alpha = sys.argv[2]
+    gradient = sys.argv[3]
+    
     #Plot settings
     matplotlib.style.use('seaborn')
-    fig_train, train_plot = plt.subplots(figsize=(10, 5))
-    train_plot.set_ylabel('Cost')
-    train_plot.set_xlabel('Iterations')
 
-    fig_valid, valid_plot = plt.subplots(figsize=(10, 5))
-    valid_plot.set_ylabel('Cost')
+    fig = plt.figure()
+    train_plot = fig.add_subplot(2,1,1)
+    train_plot.set_ylabel('Training cost')
+    valid_plot = fig.add_subplot(2,1,2)
+    valid_plot.set_ylabel('Validation cost')
     valid_plot.set_xlabel('Iterations')
-    cores = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
+
+    cores = ['tab:blue', 'tab:orange']
 
     train_features, valid_features, train_labels, valid_labels = get_data(1)
 
@@ -52,27 +54,18 @@ def main():
     costs = shape_csv('costs.csv')
     theta = shape_csv('theta.csv')
     predictions = shape_csv('predictCosts.csv')
-
+    #timestamps = shape_csv('times.csv')
     #Plotting
     if np.isfinite(costs[0]).all(): 
-        train_plot.plot(range(0,iteracoes)/1000, costs[0], cores[0], label=str(alpha), linestyle='-')
+        train_plot.plot(range(0,iteracoes,100), costs[0], cores[0], label=str(alpha), linestyle='-')
     if np.isfinite(predictions[0]).all(): 
-        valid_plot.plot(range(0,iteracoes)/1000, predictions[0], cores[0], label=str(alpha), linestyle='-')
+        valid_plot.plot(range(0,iteracoes,100), predictions[0], cores[1], label=str(alpha), linestyle='-')
 
     train_plot.legend()
     valid_plot.legend()
-    fig_train.show()
-    fig_train.savefig('training_'+str(iteracoes)+'.png')
-    fig_valid.show()
-    fig_valid.savefig('validation_'+str(iteracoes)+'.png')
+    fig.show()
+    fig.savefig('training_'+str(alpha)+"_"+gradient+"_"+str(iteracoes)+'.png')
 
-    fig_train, train_plot = plt.subplots(figsize=(10, 5))
-    train_plot.set_ylabel('Cost')
-    train_plot.set_xlabel('Iterations')
-
-    fig_valid, valid_plot = plt.subplots(figsize=(10, 5))
-    valid_plot.set_ylabel('Cost')
-    valid_plot.set_xlabel('Iterations')
 if __name__ == "__main__":
     main()
 

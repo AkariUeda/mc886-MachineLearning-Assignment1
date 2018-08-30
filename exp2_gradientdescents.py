@@ -26,14 +26,18 @@ def main():
     #Plot settings
     matplotlib.style.use('seaborn')
     #plt.yscale("log")
-    fig_train, train_plot = plt.subplots(figsize=(10, 5))
 
-    train_plot.set_ylabel('Cost')
-    train_plot.set_xlabel('Time(s)')
 
-    fig_valid, valid_plot = plt.subplots(figsize=(10, 5))
+    fig = plt.figure()
+    train_plot = fig.add_subplot(2,1,1)
 
-    valid_plot.set_ylabel('Cost')
+
+    train_plot.set_ylabel('Training cost')
+
+
+    valid_plot = fig.add_subplot(2,1,2)
+
+    valid_plot.set_ylabel('Validation cost')
     valid_plot.set_xlabel('Time(s)')
     cores = ['tab:blue',  'tab:green', 'tab:red', 'tab:orange', 'tab:purple', 'tab:brown']
    	
@@ -58,32 +62,31 @@ def main():
         prog.append("-vr=0")
 
         #Executes the call for C code
-        print(prog)            
+        #print(prog)            
         call(prog)
         
         #train_lr(theta, train_features, train_labels, iterations, alpha)
         theta = shape_csv('theta.csv')
-        print(theta)
+        #print(theta)
         if not np.isfinite(theta[0]).all():
             continue 
         costs = shape_csv('costs.csv')
         predictions = shape_csv('predictCosts.csv')
         timestamps = shape_csv('times.csv')
-        print(timestamps.shape)
+#        print(timestamps.shape)
 
         #Plotting
         train_plot.plot(timestamps[0]/1000, costs[0], cores[a], label=gradient+ " " +str(alpha[a]), linestyle='-')
         valid_plot.plot(timestamps[0]/1000, predictions[0], cores[a], label=gradient+ " " +str(alpha[a]), linestyle='-')
-
-        print(costs[0, len(costs)-1])
-        print(predictions[0, len(costs)-1])
+        print("Learning rate: " + str(alpha[a]))
+        print("   Training cost: " + str(costs[0, len(costs[0])-1]))
+        print("   Validation cost: " +str(predictions[0, len(costs[0])-1]))
 
     train_plot.legend()
     valid_plot.legend()
-    fig_train.show()
-    fig_train.savefig('train_gd_'+ gradient +str(time)+'.png')
-    fig_valid.show()
-    fig_valid.savefig('valid_gd_'+ gradient +str(time)+'.png')
+    fig.show()
+    fig.savefig('gd_'+ gradient +str(time)+'.png')
+
 if __name__ == "__main__":
     main()
 
