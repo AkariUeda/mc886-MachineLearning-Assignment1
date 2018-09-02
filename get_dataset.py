@@ -35,6 +35,7 @@ def replace_dummies(train_features):
 def get_data(normalized):
     #Reading the dataset into the training and validation sets.
     dataset = pd.read_csv('diamonds.csv')
+    dataset = dataset.sample(frac=1)
     dataset_labels = dataset["price"]
     dataset_features = dataset.drop(['Unnamed: 0', 'price'], axis=1)
     replace_dummies(dataset_features)

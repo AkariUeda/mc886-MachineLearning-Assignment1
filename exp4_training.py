@@ -33,10 +33,17 @@ def main():
     valid_plot.set_ylabel('Validation cost')
     valid_plot.set_xlabel('Iterations')
 
+    fig_pred = plt.figure()
+    pred = fig_pred.add_subplot(1,1,1)
+    pred.set_ylabel('Price')
+    pred.set_xlabel('Examples')
+
     cores = ['tab:blue', 'tab:orange']
 
     train_features, valid_features, train_labels, valid_labels = get_data(1)
 
+
+        
 
     prog=[]
     prog.append("./linearRegressionFlex")
@@ -46,6 +53,12 @@ def main():
     prog.append("-async=1")
     prog.append("-vr=1")
     prog.append("-rd=1")
+    if(gradient == 'batch'):
+        prog.append("-sgd=0")
+    elif(gradient == 'sgd'):
+        prog.append("-sgd=1")
+    elif(gradient == 'minibatch'):
+        prog.append("-mb=1")
 
     #Executes the call for C code
     call(prog)
@@ -54,6 +67,7 @@ def main():
     costs = shape_csv('costs.csv')
     theta = shape_csv('theta.csv')
     predictions = shape_csv('predictCosts.csv')
+
     #timestamps = shape_csv('times.csv')
     #Plotting
     if np.isfinite(costs[0]).all(): 
@@ -61,8 +75,21 @@ def main():
     if np.isfinite(predictions[0]).all(): 
         valid_plot.plot(range(0,iteracoes), predictions[0], cores[1], label=str(alpha), linestyle='-')
 
+    h = np.dot(valid_features, theta[0])
+
+    valid_labels, H = zip(*sorted(zip(valid_labels, h)))
+
+    pred.plot(range(0, len(H)),H, 'b.', label="Predicted")
+    pred.plot(range(0, len(valid_labels)), valid_labels, 'r.', label="Target")
+
+
+    print(len(valid_labels))
+
+    pred.legend()
     train_plot.legend()
     valid_plot.legend()
+    fig_pred.show()
+    fig_pred.savefig('prediction_'+str(alpha)+"_"+gradient+"_"+str(iteracoes)+'.png')
     fig.show()
     fig.savefig('training_'+str(alpha)+"_"+gradient+"_"+str(iteracoes)+'.png')
 

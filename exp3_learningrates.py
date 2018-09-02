@@ -19,8 +19,8 @@ def shape_csv(name):
 def main():
 
     # Adjusting training parameters
-    iteracoes = 100000
-    alpha = [0.2, 0.02, 0.002, 0.0002]
+    iteracoes = 1000
+    alpha = [0.2, 0,1, 0.02, 0.002, 0.0002]
    
     #Plot settings
     matplotlib.style.use('seaborn')
@@ -58,13 +58,13 @@ def main():
         if not np.isfinite(costs[0]).all(): 
             continue
         else:
-            train_plot.plot(range(1000,iteracoes), costs[0, 1000:], cores[a], label=str(alpha[a]), linestyle='-')
+            train_plot.plot(range(0,iteracoes), costs[0], cores[a], label=str(alpha[a]), linestyle='-')
 
        
         if not np.isfinite(predictions[0]).all(): 
             continue
         else:
-            valid_plot.plot(range(1000,iteracoes), predictions[0, 1000:], cores[a], label=str(alpha[a]), linestyle='-')
+            valid_plot.plot(range(0,iteracoes), predictions[0], cores[a], label=str(alpha[a]), linestyle='-')
 
     train_plot.legend()
     valid_plot.legend()
