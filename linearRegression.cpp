@@ -251,7 +251,7 @@ void gradientDescMiniBAsync(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
     int masterIt = 1; 
     bool stop = false;
     float ts = 0;
-    for(int i = 1;i<=ITER && !stop;i++){
+    while(masterIt <= ITER && !stop){
         for(int b = 0;b<EXAMPLES && !stop;b+=BATCHSIZE){
         	future<float> hold[FEATURES];
             for(int j = 0;j<FEATURES;j++){
@@ -272,7 +272,7 @@ void gradientDescMiniB(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt[MAXF
     float ts = 0;
     int masterIt = 1;  
     bool stop = false;
-    for(int i = 1;i<=ITER && !stop;i++){
+    while(masterIt <= ITER && !stop){
         for(int b = 0;b<EXAMPLES && !stop;b+=BATCHSIZE){
             for(int j = 0;j<FEATURES && !stop;j++){
                 float sum = summation(x,y,xt[j],theta,b,b+BATCHSIZE-1);
