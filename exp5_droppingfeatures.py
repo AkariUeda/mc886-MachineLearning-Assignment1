@@ -40,9 +40,7 @@ def main():
 
     cores = ['tab:blue', 'tab:orange']
 
-    train_features, valid_features, train_labels, valid_labels = get_data(1)
-
-
+    train_features, valid_features, train_labels, valid_labels = get_data(1,['depth', 'table'])
         
 
     prog=[]
@@ -53,6 +51,8 @@ def main():
     prog.append("-async=1")
     prog.append("-vr=1")
     prog.append("-rd=1")
+    prog.append("-f=8")
+
     if(gradient == 'batch'):
         prog.append("-sgd=0")
     elif(gradient == 'sgd'):
@@ -89,9 +89,9 @@ def main():
     train_plot.legend()
     valid_plot.legend()
     fig_pred.show()
-    fig_pred.savefig('prediction_'+str(alpha)+"_"+gradient+"_"+str(iteracoes)+'.png')
+    fig_pred.savefig('drop_prediction_'+str(alpha)+"_"+gradient+"_"+str(iteracoes)+'.png')
     fig.show()
-    fig.savefig('training_'+str(alpha)+"_"+gradient+"_"+str(iteracoes)+'.png')
+    fig.savefig('drop_training_'+str(alpha)+"_"+gradient+"_"+str(iteracoes)+'.png')
 
 if __name__ == "__main__":
     main()

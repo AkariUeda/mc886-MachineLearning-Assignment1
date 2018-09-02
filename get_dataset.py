@@ -32,12 +32,15 @@ def replace_dummies(train_features):
     train_features.color[train_features['color'] == 'I'] = 2
     train_features.color[train_features['color'] == 'J'] = 1
 
-def get_data(normalized):
+def get_data(normalized, drop):
     #Reading the dataset into the training and validation sets.
     dataset = pd.read_csv('diamonds.csv')
     dataset = dataset.sample(frac=1)
     dataset_labels = dataset["price"]
-    dataset_features = dataset.drop(['Unnamed: 0', 'price'], axis=1)
+    drop_features = ['Unnamed: 0', 'price']
+    drop_features.extend(drop)
+    print(drop_features)
+    dataset_features = dataset.drop(drop_features, axis=1)
     replace_dummies(dataset_features)
     #features
     train_features = dataset_features[0:36679]
