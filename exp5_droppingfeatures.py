@@ -54,9 +54,7 @@ def main():
     print(train_features.shape)
 
 
-
-
-
+    #Setttings training parameters
     prog=[]
     prog.append("./linearRegressionFlex")
     prog.append("-a="+str(alpha))
