@@ -40,8 +40,22 @@ def main():
 
     cores = ['tab:blue', 'tab:orange']
 
-    train_features, valid_features, train_labels, valid_labels = get_data(1,['depth', 'table'])
-        
+    train_features = shape_csv('train_features.csv')
+    train_labels = shape_csv('train_labels.csv')
+    valid_features = shape_csv('valid_features.csv')
+    valid_labels = shape_csv('valid_labels.csv')
+    print(train_features.shape)
+
+    #Drop feature depth (column 5) and table (column 6)
+    train_features = np.delete(train_features, 5, 1)
+    valid_features = np.delete(valid_features, 5, 1)
+    train_features = np.delete(train_features, 6, 1)
+    valid_features = np.delete(valid_features, 6, 1)
+    print(train_features.shape)
+
+
+
+
 
     prog=[]
     prog.append("./linearRegressionFlex")
@@ -62,7 +76,6 @@ def main():
 
     #Executes the call for C code
     call(prog)
-    print(prog)
     #train_lr(theta, train_features, train_labels, iterations, alpha)
     costs = shape_csv('costs.csv')
     theta = shape_csv('theta.csv')

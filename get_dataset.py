@@ -39,29 +39,35 @@ def get_data(normalized, drop):
     dataset_labels = dataset["price"]
     drop_features = ['Unnamed: 0', 'price']
     drop_features.extend(drop)
-    print(drop_features)
     dataset_features = dataset.drop(drop_features, axis=1)
     replace_dummies(dataset_features)
+
     #features
     train_features = dataset_features[0:36679]
     valid_features = dataset_features[36679:45849]
+    test_features = dataset_features[45849:len(dataset_features)]
+
     #adicionando o X0 = 1
     x0 = np.ones((len(train_features),1))
     train_features = np.append(x0, train_features, axis=1)
     x0 = np.ones((len(valid_features),1))
     valid_features = np.append(x0, valid_features, axis=1)
+    x0 = np.ones((len(test_features),1))
+    test_features = np.append(x0, test_features, axis=1)
     #targets
     train_labels = np.array(dataset_labels[0:36679])
     valid_labels = np.array(dataset_labels[36679:45849])
+    test_labels = np.array(dataset_labels[45849:len(dataset_labels)])
     if(normalized):
         normalize_features(train_features)
         normalize_features(valid_features)
-
+        test_features(valid_features)
+    
     np.savetxt("train_features.csv",train_features,delimiter=",")
     np.savetxt("train_labels.csv",train_labels,delimiter=",")
     np.savetxt("valid_features.csv",valid_features,delimiter=",")
     np.savetxt("valid_labels.csv",valid_labels,delimiter=",")
-
-    return train_features, valid_features, train_labels, valid_labels
+    np.savetxt("test_features.csv",valid_features,delimiter=",")
+    np.savetxt("test_labels.csv",valid_labels,delimiter=",")
 
 

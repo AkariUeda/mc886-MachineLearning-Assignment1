@@ -33,7 +33,10 @@ def main():
     valid_plot.set_xlabel('Iterations')
     cores = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
 
-    train_features, valid_features, train_labels, valid_labels = get_data(1)
+    train_features = shape_csv('train_features.csv')
+    train_labels = shape_csv('train_labels.csv')
+    valid_features = shape_csv('valid_features.csv')
+    valid_labels = shape_csv('valid_labels.csv')
 
     for a in range(0,len(alpha)):
         prog=[]

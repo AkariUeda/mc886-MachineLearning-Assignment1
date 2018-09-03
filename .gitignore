@@ -1,6 +1,10 @@
 __pycache__
 
-*csv
+
+predictCosts.csv
+costs.csv
+predictTimes.csv
+theta.csv
 *png
 linearRegressionFlex
 

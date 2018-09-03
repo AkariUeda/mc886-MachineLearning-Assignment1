@@ -40,10 +40,10 @@ def main():
 
     cores = ['tab:blue', 'tab:orange']
 
-    train_features, valid_features, train_labels, valid_labels = get_data(1)
-
-
-        
+    train_features = shape_csv('train_features.csv')
+    train_labels = shape_csv('train_labels.csv')
+    valid_features = shape_csv('valid_features.csv')
+    valid_labels = shape_csv('valid_labels.csv')
 
     prog=[]
     prog.append("./linearRegressionFlex")
@@ -62,7 +62,6 @@ def main():
 
     #Executes the call for C code
     call(prog)
-    print(prog)
     #train_lr(theta, train_features, train_labels, iterations, alpha)
     costs = shape_csv('costs.csv')
     theta = shape_csv('theta.csv')
@@ -81,10 +80,6 @@ def main():
 
     pred.plot(range(0, len(H)),H, 'b.', label="Predicted")
     pred.plot(range(0, len(valid_labels)), valid_labels, 'r.', label="Target")
-
-
-    print(len(valid_labels))
-
     pred.legend()
     train_plot.legend()
     valid_plot.legend()
