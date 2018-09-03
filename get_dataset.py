@@ -65,8 +65,8 @@ def main():
     np.savetxt("train_labels.csv",train_labels,delimiter=",")
     np.savetxt("valid_features.csv",valid_features,delimiter=",")
     np.savetxt("valid_labels.csv",valid_labels,delimiter=",")
-    np.savetxt("test_features.csv",valid_features,delimiter=",")
-    np.savetxt("test_labels.csv",valid_labels,delimiter=",")
+    np.savetxt("test_features.csv",test_features,delimiter=",")
+    np.savetxt("test_labels.csv",test_labels,delimiter=",")
 
 
 if __name__ == "__main__":
