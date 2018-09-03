@@ -20,7 +20,7 @@ def main():
 
     # Adjusting training parameters
     iteracoes = 100
-    alpha = [0.2, 0.002, 0.0002]
+    alpha = [0.00027, 0.00015, 0.0001]
    
     #Plot settings
     matplotlib.style.use('seaborn')
@@ -29,8 +29,14 @@ def main():
     ax.set_xlabel('Iterações')
     cores = ['C0', 'C1', 'C2']
 
+
     for normalized in range(0, 2):
-        train_features, valid_features, train_labels, valid_labels = get_data(normalized)
+        if normalized == 1:
+                train_features = shape_csv('train_features.csv')
+                train_labels = shape_csv('train_labels.csv')
+        else:
+                train_features = shape_csv('not_norm_train_features.csv')
+                train_labels = shape_csv('not_norm_train_labels.csv')  
 
         for a in range(0,len(alpha)):
             prog=[]
@@ -47,7 +53,6 @@ def main():
             #train_lr(theta, train_features, train_labels, iterations, alpha)
             costs = shape_csv('costs.csv')
             theta = shape_csv('theta.csv')
-            #predictions = shape_csv('predictions.csv')
 
             #Plotting
             if not np.isfinite(costs[0]).all(): 

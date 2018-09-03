@@ -44,14 +44,14 @@ def main():
     train_labels = shape_csv('train_labels.csv')
     valid_features = shape_csv('valid_features.csv')
     valid_labels = shape_csv('valid_labels.csv')
-    print(train_features.shape)
 
-    #Drop feature depth (column 5) and table (column 6)
-    train_features = np.delete(train_features, 5, 1)
-    valid_features = np.delete(valid_features, 5, 1)
-    train_features = np.delete(train_features, 6, 1)
-    valid_features = np.delete(valid_features, 6, 1)
-    print(train_features.shape)
+    #Drop feature x, y and z (columns 7, 8 and 9)
+    train_features = np.delete(train_features, 9, 1)
+    valid_features = np.delete(valid_features, 9, 1)
+    train_features = np.delete(train_features, 8, 1)
+    valid_features = np.delete(valid_features, 8, 1)
+    train_features = np.delete(train_features, 7, 1)
+    valid_features = np.delete(valid_features, 7, 1)
 
 
     #Setttings training parameters
@@ -92,7 +92,6 @@ def main():
 
     pred.plot(range(0, len(H)),H, 'b.', label="Predicted")
     pred.plot(range(0, len(valid_labels)), valid_labels, 'r.', label="Target")
-
 
     print(len(valid_labels))
 

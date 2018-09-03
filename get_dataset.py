@@ -61,7 +61,7 @@ def get_data(normalized, drop):
     if(normalized):
         normalize_features(train_features)
         normalize_features(valid_features)
-        test_features(valid_features)
+        normalize_features(test_features)
     
     np.savetxt("train_features.csv",train_features,delimiter=",")
     np.savetxt("train_labels.csv",train_labels,delimiter=",")
