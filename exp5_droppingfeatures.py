@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import sys
 import warnings
-from get_dataset import get_data
 from subprocess import call
 
 warnings.filterwarnings('ignore')
@@ -63,7 +62,7 @@ def main():
     prog.append("-async=1")
     prog.append("-vr=1")
     prog.append("-rd=1")
-    prog.append("-f=8")
+    prog.append("-f=7")
 
     if(gradient == 'batch'):
         prog.append("-sgd=0")

@@ -32,13 +32,12 @@ def replace_dummies(train_features):
     train_features.color[train_features['color'] == 'I'] = 2
     train_features.color[train_features['color'] == 'J'] = 1
 
-def get_data(normalized, drop):
+def main():
     #Reading the dataset into the training and validation sets.
     dataset = pd.read_csv('diamonds.csv')
     dataset = dataset.sample(frac=1)
     dataset_labels = dataset["price"]
     drop_features = ['Unnamed: 0', 'price']
-    drop_features.extend(drop)
     dataset_features = dataset.drop(drop_features, axis=1)
     replace_dummies(dataset_features)
 
@@ -58,10 +57,9 @@ def get_data(normalized, drop):
     train_labels = np.array(dataset_labels[0:36679])
     valid_labels = np.array(dataset_labels[36679:45849])
     test_labels = np.array(dataset_labels[45849:len(dataset_labels)])
-    if(normalized):
-        normalize_features(train_features)
-        normalize_features(valid_features)
-        normalize_features(test_features)
+    normalize_features(train_features)
+    normalize_features(valid_features)
+    normalize_features(test_features)
     
     np.savetxt("train_features.csv",train_features,delimiter=",")
     np.savetxt("train_labels.csv",train_labels,delimiter=",")
@@ -71,3 +69,5 @@ def get_data(normalized, drop):
     np.savetxt("test_labels.csv",valid_labels,delimiter=",")
 
 
+if __name__ == "__main__":
+    main()

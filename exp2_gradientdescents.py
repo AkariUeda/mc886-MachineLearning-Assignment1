@@ -6,7 +6,6 @@ import pandas as pd
 import sys
 
 import warnings
-from get_dataset import get_data
 from subprocess import call
 
 warnings.filterwarnings('ignore')
