@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import sys
 import warnings
+from sklearn import metrics
 from subprocess import call
 
 warnings.filterwarnings('ignore')
@@ -32,9 +33,7 @@ def main():
 
     theta = shape_csv('final_theta.csv')
     h = np.dot(test_features, theta[0])
-    J = np.dot(test_features, theta[0])
-    J = np.subtract(J,test_labels)
-    cost = np.sum(np.square(J))/(2*len(test_features))
+    cost = metrics.mean_squared_error(test_labels, h)
     print("Prediction error: "+str(cost))
     test_labels, H = zip(*sorted(zip(test_labels, h)))
 
