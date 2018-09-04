@@ -20,6 +20,7 @@ const int MAXVALIDATE = 10000;
 const float FEXINV = (float)1/EXAMPLES;
 const float DFEXINV = (float)1/(2*EXAMPLES);
 const double LFEXINV = (double)1/EXAMPLES;
+     
 /*Helper functions for reading data from the .csv files*/
 void read_csv(int row, int col, string filename, float dat[MAXEXAMPLES][MAXFEATURES]){
 	FILE *file;
@@ -182,7 +183,6 @@ bool writeCostToFile(FILE *fp,FILE *fpPred,FILE *fpTime,FILE *fpTimePred,float t
     writeInfo(fp,cus,i,false);
     if(TIME)
         writeInfo(fpTime,ts,i,false);
-    if(i%
     if(DOVALIDATE){
         float cusPred = cost(theta,yVal,xVal);
         writeInfo(fpPred,cusPred,i,true);
@@ -424,7 +424,7 @@ void gradientDescMiniBTimed(float x[MAXEXAMPLES][MAXFEATURES],float y[],float xt
 }
 /*Main*/
 int main(int argc, char** argv){
-    float traindata[MAXEXAMPLES][MAXFEATURES],label[MAXEXAMPLES],dataTransp[MAXFEATURES][MAXEXAMPLES],dataVal[MAXVALIDATE][MAXFEATURES],labelVal[MAXVALIDATE],theta[FEATURES];       
+    float traindata[MAXEXAMPLES][MAXFEATURES],label[MAXEXAMPLES],dataTransp[MAXFEATURES][MAXEXAMPLES],dataVal[MAXVALIDATE][MAXFEATURES],labelVal[MAXVALIDATE],theta[MAXFEATURES];  
    
 	srand(time(NULL));
     const string HELP = "-features ou -f          : define o numero de features (10 por padrão)\n-examples ou -e          : define o numero de exemplos pra treino (45849 por padrão)\n-validates ou -v         : define o numero de exemplos pra validacao (9170 por padrão)\n-iterations ou -i        : define o numero de iteracoes da regressão (1000 por padrão)\n-alpha ou -a             : define o valor da learning rate (0.00027 por padrão)\n-verbose ou -vr          : imprime ou nao os resultados a cada N iteracoes (0 desligado, !0 ligado, ligado por padrão)\n-stochasticdesc ou -sgd  : faz stochastic gradient descent no lugar de batch gradient descent (0 desligado, !0 ligado, desligado por padrão)\n-randtheta ou -rt        : inicializa o vetor de thetas com valores aleatórios (0 desligado, !0 ligado, desligado por padrão)\n-howverbose ou -hvr      : define a cada quantas iterações devem ser impressos os resultados (1000 por padrão)\n-trainfeatures ou -tf    : indica o nome do arquivo com as features para treino (train_features.csv por padrão)\n-trainlabels ou -tl      : indica o nome do arquivo com as labels para treino (train_labels.csv por padrão)\n-validatefeatures ou -vf : indica o nome do arquivo com as features para validação (valid_features.csv por padrão)\n-validatelabels ou -vl   : indica o nome do arquivo com as labels para validação (valid_labels.csv por padrão)\n-help ou -h              : exibe este texto e termina\n";
@@ -456,6 +456,8 @@ int main(int argc, char** argv){
             return 0;
         }
     }
+    
+	cout << fnameEx << '\n';
 	FILE *costCsv = fopen("costs.csv", "w+"), *timeCsv = fopen("times.csv", "w+");
     FILE *costPredCsv, *timePredCsv;
     if(DOVALIDATE){
@@ -474,7 +476,9 @@ int main(int argc, char** argv){
 	read_array(row,fnameLabel,label);	
 	read_csv(row, col, fnameVal, dataVal);
 	read_array(row,fnameValLabel,labelVal);
+	
 	transpose(traindata,dataTransp);
+	
 	TIME *= 1000;
 	if(MINIBATCH){
         if(!ASYNC)
