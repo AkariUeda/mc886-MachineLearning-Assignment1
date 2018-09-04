@@ -1,0 +1,14 @@
+bash-4.4$ python3 exp7_normalequation.py 
+(45849, 10)
+Theta 0 = -6882.089720
+Theta 1 = 38719.655332
+Theta 2 = -79.264527
+Theta 3 = 2111.513635
+Theta 4 = 4011.154696
+Theta 5 = -19022.168443
+Theta 6 = -10559.756019
+Theta 7 = 7600.491969
+Theta 8 = -16750.408369
+Theta 9 = 2514.255489
+Prediction error: 1037569.26294
+

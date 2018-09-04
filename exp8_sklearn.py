@@ -34,7 +34,7 @@ def main():
     valid_features = shape_csv('valid_features.csv')
     valid_labels = shape_csv('valid_labels.csv')
 
-    model = linear_model.SGDRegressor(loss='squared_loss', alpha=0.0002, learning_rate='constant')
+    model = linear_model.SGDRegressor(loss='squared_loss', alpha=0.0001, learning_rate='constant')
     model.fit(train_features, train_labels)
 
     valid_pred = model.predict(valid_features)
@@ -47,7 +47,6 @@ def main():
     pred.legend()
     fig_pred.show()
     fig_pred.savefig('sklearn.png')
-
 
 if __name__ == "__main__":
     main()
