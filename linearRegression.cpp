@@ -124,9 +124,9 @@ float summation(float **x,float y[],float xj[],float *theta,int ini, int fim){
     }
     return sum;
 }
-float cost(float *theta,float y[],float **x){
+float cost(float *theta,float y[],float **x, int setSize){
     float sum = 0.0, c = 0.0;
-    for(int i = 0;i<EXAMPLES;i++){
+    for(int i = 0;i<setSize;i++){
         float val = (h(x[i],theta)-y[i]);
         float yl = val*val - c;
         float t = sum + yl;
@@ -154,7 +154,7 @@ void predict(float **x,float y[],float *theta){
 		sprintf(s,"\"%f\",\"%f\"\n",h(x[i],theta),y[i]);   
     	fputs(s,fp );      
     }
-    printf("Custo predito: %f\n",cost(theta,y,x));
+    printf("Custo predito: %f\n",cost(theta,y,x,VALIDATE));
     fclose(fp );
 }
 void writeInfo(FILE *fp,float cus,int i,bool isPred){
@@ -179,12 +179,12 @@ void writeTheta(float *theta){
     fclose(th);
 }
 bool writeCostToFile(FILE *fp,FILE *fpPred,FILE *fpTime,FILE *fpTimePred,float ts,float *theta,float **x,float y[],float **xVal,float *yVal,int i){
-    float cus = cost(theta,y,x);
+    float cus = cost(theta,y,x,EXAMPLES);
     writeInfo(fp,cus,i,false);
     if(TIME)
         writeInfo(fpTime,ts,i,false);
     if(DOVALIDATE){
-        float cusPred = cost(theta,yVal,xVal);
+        float cusPred = cost(theta,yVal,xVal,VALIDATE);
         writeInfo(fpPred,cusPred,i,true);
         if(TIME)
             writeInfo(fpTimePred,ts,i,false);
@@ -459,7 +459,7 @@ int main(int argc, char** argv){
     traindata = allocateMatrix(EXAMPLES,FEATURES);
     label = (float*)calloc(EXAMPLES,sizeof(float));
     dataTransp = allocateMatrix(FEATURES,EXAMPLES);
-    dataVal = allocateMatrix(EXAMPLES,FEATURES);
+    dataVal = allocateMatrix(VALIDATE,FEATURES);
     theta = (float*) calloc(FEATURES,sizeof(float));
     labelVal = (float*) calloc(EXAMPLES,sizeof(float));
 	FILE *costCsv = fopen("costs.csv", "w+"), *timeCsv = fopen("times.csv", "w+");
