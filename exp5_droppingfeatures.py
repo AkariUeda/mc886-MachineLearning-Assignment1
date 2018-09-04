@@ -43,12 +43,12 @@ def main():
     train_labels = shape_csv('train_labels.csv')
     valid_features = shape_csv('valid_features.csv')
     valid_labels = shape_csv('valid_labels.csv')
-
+    print(train_features.shape)
     train_features = np.append(train_features,np.square(train_features[:,[1,2,3,4,]]),axis=1)
     train_features = np.append(train_features,np.power(train_features[:,[1]],3),axis=1)
     valid_features = np.append(valid_features,np.square(valid_features[:,[1,2,3,4,]]),axis=1)
     valid_features = np.append(valid_features,np.power(valid_features[:,[1]],3),axis=1)
-
+    print(train_features.shape)
     #Drop feature x, y and z (columns 7, 8 and 9)
     a = train_features[:,[1,2,3,4,10,11,12,13,14]]
     a = np.power(a,-1,dtype=float)
@@ -67,7 +67,7 @@ def main():
     train_features = np.append(train_features,a,axis=1)
 
 
-    
+    print(train_features.shape)
 
 
     np.savetxt("dropped_valid_features.csv", valid_features, delimiter=",")

@@ -18,7 +18,7 @@ def shape_csv(name):
 def main():
 
     # Adjusting training parameters
-    iteracoes = 100
+    iteracoes = 10000
     alpha = [0.00027, 0.00015, 0.0001]
    
     #Plot settings
