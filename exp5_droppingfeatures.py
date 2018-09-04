@@ -44,38 +44,31 @@ def main():
     valid_features = shape_csv('valid_features.csv')
     valid_labels = shape_csv('valid_labels.csv')
 
+    train_features = np.append(train_features,np.square(train_features[:,[1,2,3,4,]]),axis=1)
+    train_features = np.append(train_features,np.power(train_features[:,[1]],3),axis=1)
+    valid_features = np.append(valid_features,np.square(valid_features[:,[1,2,3,4,]]),axis=1)
+    valid_features = np.append(valid_features,np.power(valid_features[:,[1]],3),axis=1)
+
     #Drop feature x, y and z (columns 7, 8 and 9)
-    # a = train_features[:,[1,2,3,4]]
-    # a = np.power(a,-1,dtype=float)
-    # a = a.sum(1)
-    # a = np.power(a,-1,dtype=float)
-    # a = 4*a
-    # a = a.reshape(-1,1)
-    # b = valid_features[:,[1,2,3,4]]    
-    # b = np.power(b,-1,dtype=float)
-    # b = b.sum(1)
-    # b = np.power(b,-1,dtype=float)
-    # b = 4*b
-    # b = b.reshape(-1,1)
-    # valid_features = np.append(valid_features,b,axis=1)
-    # train_features = np.append(train_features,a,axis=1)
-
-    train_volume = np.multiply(train_features[:,7], train_features[:,8])
-    train_volume = np.multiply(train_features[:,9], train_volume)
-    valid_volume = np.multiply(valid_features[:,7], valid_features[:,8])
-    valid_volume = np.multiply(valid_features[:,9], valid_volume)
+    a = train_features[:,[1,2,3,4,10,11,12,13,14]]
+    a = np.power(a,-1,dtype=float)
+    a = a.sum(1)
+    a = np.power(a,-1,dtype=float)
+    a = 9*a
+    a = a.reshape(-1,1)
+    b = valid_features[:,[1,2,3,4]]   
+    b = np.append(b,np.square(valid_features[:,[1,2,3,4,10,11,12,13,14]]),axis=1) 
+    b = np.power(b,-1,dtype=float)
+    b = b.sum(1)
+    b = np.power(b,-1,dtype=float)
+    b = 9*b
+    b = b.reshape(-1,1)
+    valid_features = np.append(valid_features,b,axis=1)
+    train_features = np.append(train_features,a,axis=1)
 
 
-    train_volume = train_volume.reshape((len(train_volume),1))
-    valid_volume = valid_volume.reshape((len(valid_volume),1))
+    
 
-    train_features = train_features[:, 0:7]
-    valid_features = valid_features[:, 0:7]
-    print(valid_volume.shape, valid_features.shape)
-    valid_features = np.append(valid_features,valid_volume,axis=1)
-    train_features = np.append(train_features,train_volume,axis=1)
-
-    print(train_features[0,:])
 
     np.savetxt("dropped_valid_features.csv", valid_features, delimiter=",")
     np.savetxt("dropped_train_features.csv", train_features, delimiter=",")
@@ -90,7 +83,7 @@ def main():
     prog.append("-async=1")
     prog.append("-vr=1")
     prog.append("-rd=1")
-    prog.append("-f=8")
+    prog.append("-f=16")
     prog.append("-tf=dropped_train_features.csv")
     prog.append("-tl=dropped_train_labels.csv")    
     prog.append("-vf=dropped_valid_features.csv")
