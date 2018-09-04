@@ -47,7 +47,6 @@ def main():
         prog.append("-vr=1")
         prog.append("-rd=1")
 
-
         #Executes the call for C code
         call(prog)
         print(prog)

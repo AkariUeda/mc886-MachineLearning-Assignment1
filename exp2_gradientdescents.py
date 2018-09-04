@@ -47,7 +47,6 @@ def main():
     else:
         g="-mb=1"
 
-
     train_features = shape_csv('train_features.csv')
     train_labels = shape_csv('train_labels.csv')
     valid_features = shape_csv('valid_features.csv')
