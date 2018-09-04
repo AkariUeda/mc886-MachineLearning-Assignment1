@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 int FEATURES = 10;
-int EXAMPLES = 45849;
+int EXAMPLES = 36679;
 int DOVALIDATE = 0;
 int VALIDATE = 9170;
 int ITER = 0;
@@ -133,7 +133,7 @@ float cost(float *theta,float y[],float **x, int setSize){
         c = (t-sum)-yl;
         sum = t;
     }
-    return sum/(2*EXAMPLES);
+    return sum/(2*setSize);
 }
 void randomTheta(float *theta){
 	for(int i = 0;i<FEATURES;i++) theta[i] = (rand()&1 ? -1 : 1)*rand()%1663; 
