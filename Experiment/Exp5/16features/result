@@ -1,0 +1,69 @@
+bash-4.4$ python3 exp5_droppingfeatures.py 1000 0.02 batch
+(36679, 10)
+(36679, 15)
+(36679, 16)
+Starting linear regression...
+Theta 0 = -1619.553589
+Theta 1 = 323.850159
+Theta 2 = -1170.505981
+Theta 3 = -985.477295
+Theta 4 = -837.634644
+Theta 5 = -1988.420532
+Theta 6 = -1803.137451
+Theta 7 = -123.937881
+Theta 8 = -1068.634033
+Theta 9 = -1255.680298
+Theta 10 = 3049.049805
+Theta 11 = 90.049248
+Theta 12 = 309.552094
+Theta 13 = 646.868286
+Theta 14 = 6547.009277
+Theta 15 = 1116.684326
+Custo predito: 8957789.000000
+9170
+bash-4.4$ python3 exp5_droppingfeatures.py 10000 0.02 batch
+(36679, 10)
+(36679, 15)
+(36679, 16)
+Starting linear regression...
+Theta 0 = -3164.923340
+Theta 1 = 40.241726
+Theta 2 = -1942.494995
+Theta 3 = -1276.682129
+Theta 4 = -769.367981
+Theta 5 = -3953.015381
+Theta 6 = -3448.477051
+Theta 7 = -310.835449
+Theta 8 = -2087.433838
+Theta 9 = -2475.103271
+Theta 10 = 3821.985107
+Theta 11 = 294.164429
+Theta 12 = 615.508850
+Theta 13 = 972.245972
+Theta 14 = 7427.817871
+Theta 15 = 5402.689453
+Custo predito: 9188263.000000
+9170
+bash-4.4$ python3 exp5_droppingfeatures.py 100000 0.02 batch
+(36679, 10)
+(36679, 15)
+(36679, 16)
+Starting linear regression...
+Theta 0 = -3998.094727
+Theta 1 = 909.483215
+Theta 2 = -4317.309570
+Theta 3 = -3176.350098
+Theta 4 = 1645.836548
+Theta 5 = -4242.373047
+Theta 6 = -3978.338379
+Theta 7 = -3083.600830
+Theta 8 = -3174.474365
+Theta 9 = -3394.758789
+Theta 10 = 5324.809570
+Theta 11 = 1.527692
+Theta 12 = 49.434662
+Theta 13 = -1135.263428
+Theta 14 = 4684.897461
+Theta 15 = 17894.080078
+Custo predito: 20164596.000000
+
