@@ -1,33 +1,47 @@
-Batch 60s
-Learning rate: 0.2
-   Training cost: 625445.625
-   Validation cost: 1345578.75
-Learning rate: 0.02
-   Training cost: 817218.4375
-   Validation cost: 1224211.75
-Learning rate: 0.002
-   Training cost: 3139795.25
-   Validation cost: 4020057.75
-Learning rate: 0.0002
-   Training cost: 5583991.5
-   Validation cost: 6716172.0
+Batch 120s
 
-SGD 60s
-Learning rate: 0.002
-   Training cost: inf
-   Validation cost: inf
-Learning rate: 0.0002
-   Training cost: 13074120704.0
-   Validation cost: 19586078720.0
-   
-Mini Batch 60s
+Learning rate: 0.2
+   Training cost: 605641.25
+   Validation cost: 2506607.0
+
 Learning rate: 0.02
-   Training cost: 618068.0625
-   Validation cost: 2130552.25
+   Training cost: 737099.875
+   Validation cost: 271335.375
+
 Learning rate: 0.002
-   Training cost: 782767.3125
-   Validation cost: 1146632.5
+   Training cost: 2207350.0
+   Validation cost: 812675.75
+
 Learning rate: 0.0002
-   Training cost: 2882502.25
-   Validation cost: 3739581.5
+   Training cost: 4852019.5
+   Validation cost: 1094068.625
+
+SGD 120s
+
+bash-4.4$ python3 exp2_gradientdescents.py sgd 120 
+Starting linear regression...
+Starting linear regression...
+Starting linear regression...
+Starting linear regression...
+Learning rate: 0.0002
+   Training cost: 933177065472.0
+   Validation cost: 325052628992.0
+
+
+minibatch 120s
+
+bash-4.4$ python3 exp2_gradientdescents.py minibatch 120 
+Starting linear regression...
+Starting linear regression...
+Learning rate: 0.02
+   Training cost: 609983.75
+   Validation cost: 2352477.25
+Starting linear regression...
+Learning rate: 0.002
+   Training cost: 726930.5
+   Validation cost: 244170.9375
+Starting linear regression...
+Learning rate: 0.0002
+   Training cost: 2082907.125
+   Validation cost: 783266.5625
 
