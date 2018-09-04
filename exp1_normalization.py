@@ -43,6 +43,9 @@ def main():
             prog.append("-a="+str(alpha[a]))
             prog.append("-i="+str(iteracoes))
             prog.append("-dvl=0")
+            if normalized == 1:
+                prog.append("-tf=not_norm_train_features.csv")
+                prog.append("-tl=not_norm_train_labels.csv")
             prog.append("-async=1")
             print(prog)
             #prog.append("-vr=0")
@@ -54,7 +57,7 @@ def main():
             theta = shape_csv('theta.csv')
 
             #Plotting
-            if not np.isfinite(costs[0]).all(): 
+            if not np.isfinite(theta[0]).all(): 
                 continue
             if(normalized):
                 ax.plot(range(0,iteracoes), costs[0], cores[a], label='Norm ' + str(alpha[a]), linestyle='--')

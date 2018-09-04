@@ -19,9 +19,9 @@ def shape_csv(name):
 def main():
 
     # Adjusting training parameters
+    gradient = sys.argv[1]
     time = sys.argv[2]
     alpha = [0.2, 0.02, 0.002, 0.0002]
-    gradient = sys.argv[1]
     #Plot settings
     matplotlib.style.use('seaborn')
     #plt.yscale("log")

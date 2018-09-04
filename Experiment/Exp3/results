@@ -1,0 +1,126 @@
+1000 iteracoes:
+Theta 0 = -7090.705566
+Theta 1 = 16258.483398
+Theta 2 = -942.018799
+Theta 3 = -652.464844
+Theta 4 = 519.379883
+Theta 5 = -9587.046875
+Theta 6 = -7822.079102
+Theta 7 = 13153.125977
+Theta 8 = -729.755737
+Theta 9 = -3445.494629
+Custo predito: 1927500.125000
+['./linearRegressionFlex', '-a=0.2', '-i=1000', '-dvl=1', '-async=1', '-vr=1', '-rd=1']
+Theta 0 = -3848.481934
+Theta 1 = 11329.097656
+Theta 2 = -1442.113647
+Theta 3 = -2036.231567
+Theta 4 = -1302.048706
+Theta 5 = -5429.478027
+Theta 6 = -4463.208008
+Theta 7 = 9613.534180
+Theta 8 = 549.614746
+Theta 9 = -1141.016602
+Custo predito: 3100970.000000
+['./linearRegressionFlex', '-a=0.1', '-i=1000', '-dvl=1', '-async=1', '-vr=1', '-rd=1']
+Theta 0 = -521.661926
+Theta 1 = 4083.992920
+Theta 2 = -1014.951904
+Theta 3 = -1978.340576
+Theta 4 = -1512.248413
+Theta 5 = -656.895569
+Theta 6 = -444.154907
+Theta 7 = 4101.715820
+Theta 8 = 991.578125
+Theta 9 = 408.772247
+Custo predito: 5069374.500000
+['./linearRegressionFlex', '-a=0.02', '-i=1000', '-dvl=1', '-async=1', '-vr=1', '-rd=1']
+Theta 0 = 177.293716
+Theta 1 = 748.678467
+Theta 2 = 175.474960
+Theta 3 = -7.899742
+Theta 4 = 51.301834
+Theta 5 = 215.919861
+Theta 6 = 222.069611
+Theta 7 = 848.559021
+Theta 8 = 400.589783
+Theta 9 = 314.557495
+Custo predito: 7188854.000000
+['./linearRegressionFlex', '-a=0.002', '-i=1000', '-dvl=1', '-async=1', '-vr=1', '-rd=1']
+Theta 0 = 216.559387
+Theta 1 = 298.685028
+Theta 2 = 331.643829
+Theta 3 = 293.287079
+Theta 4 = 278.747589
+Theta 5 = 267.550018
+Theta 6 = 251.290680
+Theta 7 = 391.126892
+Theta 8 = 275.304108
+Theta 9 = 252.843079
+Custo predito: 7628083.000000
+['./linearRegressionFlex', '-a=0.0002', '-i=1000', '-dvl=1', '-async=1', '-vr=1', '-rd=1']
+
+
+10000 iteracoes
+Theta 0 = -10999.407227
+Theta 1 = 36346.031250
+Theta 2 = -185.215225
+Theta 3 = 2063.258789
+Theta 4 = 4044.224121
+Theta 5 = -15930.024414
+Theta 6 = -13365.638672
+Theta 7 = 10151.398438
+Theta 8 = -6350.230957
+Theta 9 = -6361.404297
+Custo predito: 904724.187500
+['./linearRegressionFlex', '-a=0.2', '-i=10000', '-dvl=1', '-async=1', '-vr=1', '-rd=1']
+Theta 0 = -12336.668945
+Theta 1 = 29569.753906
+Theta 2 = -311.607819
+Theta 3 = 1936.620483
+Theta 4 = 4000.630127
+Theta 5 = -16023.179688
+Theta 6 = -14168.208984
+Theta 7 = 15123.336914
+Theta 8 = -3798.763672
+Theta 9 = -6562.917480
+Custo predito: 1036713.437500
+['./linearRegressionFlex', '-a=0.1', '-i=10000', '-dvl=1', '-async=1', '-vr=1', '-rd=1']
+Theta 0 = -7222.693848
+Theta 1 = 16212.572266
+Theta 2 = -1121.333374
+Theta 3 = -624.688354
+Theta 4 = 599.159729
+Theta 5 = -9412.161133
+Theta 6 = -8221.697266
+Theta 7 = 13047.107422
+Theta 8 = -467.362610
+Theta 9 = -3073.103027
+Custo predito: 2027398.625000
+['./linearRegressionFlex', '-a=0.02', '-i=10000', '-dvl=1', '-async=1', '-vr=1', '-rd=1']
+Theta 0 = -528.424805
+Theta 1 = 4078.161621
+Theta 2 = -1013.128540
+Theta 3 = -1954.296509
+Theta 4 = -1497.965942
+Theta 5 = -679.593567
+Theta 6 = -469.467682
+Theta 7 = 4081.800537
+Theta 8 = 1016.339233
+Theta 9 = 420.597046
+Custo predito: 5076361.000000
+['./linearRegressionFlex', '-a=0.002', '-i=10000', '-dvl=1', '-async=1', '-vr=1', '-rd=1']
+Theta 0 = 175.859665
+Theta 1 = 747.038330
+Theta 2 = 173.467163
+Theta 3 = -7.728020
+Theta 4 = 51.528164
+Theta 5 = 216.362244
+Theta 6 = 222.797134
+Theta 7 = 849.665588
+Theta 8 = 402.154633
+Theta 9 = 315.310913
+Custo predito: 7188725.000000
+['./linearRegressionFlex', '-a=0.0002', '-i=10000', '-dvl=1', '-async=1', '-vr=1', '-rd=1']
+
+

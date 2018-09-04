@@ -30,11 +30,6 @@ def main():
     test_features = shape_csv('test_features.csv')
     test_labels = shape_csv('test_labels.csv')
 
-    #Drop feature x, y and z (columns 7, 8 and 9)
-    test_features = np.delete(test_features, 9, 1)
-    test_features = np.delete(test_features, 8, 1)
-    test_features = np.delete(test_features, 7, 1)
-
     #train_lr(theta, train_features, train_labels, iterations, alpha)
     theta = shape_csv('final_theta.csv')
 

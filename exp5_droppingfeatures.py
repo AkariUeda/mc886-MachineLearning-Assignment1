@@ -45,14 +45,37 @@ def main():
     valid_labels = shape_csv('valid_labels.csv')
 
     #Drop feature x, y and z (columns 7, 8 and 9)
-    train_features = np.delete(train_features, 9, 1)
-    valid_features = np.delete(valid_features, 9, 1)
-    train_features = np.delete(train_features, 8, 1)
-    valid_features = np.delete(valid_features, 8, 1)
-    train_features = np.delete(train_features, 7, 1)
-    valid_features = np.delete(valid_features, 7, 1)
+    #train_features = np.delete(train_features, 9, 1)
+    #valid_features = np.delete(valid_features, 9, 1)
+    #train_features = np.delete(train_features, 8, 1)
+    #valid_features = np.delete(valid_features, 8, 1)
+    #train_features = np.delete(train_features, 7, 1)
+    #valid_features = np.delete(valid_features, 7, 1)
+    #Drop feature Depth, Table (columns 6, 5)
+    #train_features = np.delete(train_features, 6, 1)
+    #valid_features = np.delete(valid_features, 6, 1)
+    #train_features = np.delete(train_features, 5, 1)
+    #valid_features = np.delete(valid_features, 5, 1)
+    #print(train_features)
+    a = train_features[:,[1,2,3,4]]
+    a = np.power(a,-1,dtype=float)
+    a = a.sum(1)
+    a = np.power(a,-1,dtype=float)
+    a = 4*a
+    a = a.reshape(-1,1)
+    b = valid_features[:,[1,2,3,4]]    
+    b = np.power(b,-1,dtype=float)
+    b = b.sum(1)
+    b = np.power(b,-1,dtype=float)
+    b = 4*b
+    b = b.reshape(-1,1)
+    valid_features = np.append(valid_features,b,axis=1)
+    train_features = np.append(train_features,a,axis=1)
 
-
+    np.savetxt("dropped_valid_features.csv", valid_features, delimiter=",")
+    np.savetxt("dropped_train_features.csv", train_features, delimiter=",")
+    np.savetxt("dropped_valid_labels.csv", valid_labels, delimiter=",")
+    np.savetxt("dropped_train_labels.csv", train_labels, delimiter=",")
     #Setttings training parameters
     prog=[]
     prog.append("./linearRegressionFlex")
@@ -62,8 +85,11 @@ def main():
     prog.append("-async=1")
     prog.append("-vr=1")
     prog.append("-rd=1")
-    prog.append("-f=7")
-
+    prog.append("-f=11")
+    prog.append("-tf=dropped_train_features.csv")
+    prog.append("-tl=dropped_train_labels.csv")    
+    prog.append("-vf=dropped_valid_features.csv")
+    prog.append("-vl=dropped_valid_labels.csv")
     if(gradient == 'batch'):
         prog.append("-sgd=0")
     elif(gradient == 'sgd'):
