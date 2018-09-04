@@ -148,7 +148,7 @@ void printV(float v[], int T){
     return;
 }
 void predict(float **x,float y[],float *theta){
-    FILE *fp = fopen("predictions.csv", "w+");
+    FILE *fp = fopen("./csv/predictions.csv", "w+");
 	for(int i = 0;i<VALIDATE;i++){
 		char s[2048];
 		sprintf(s,"\"%f\",\"%f\"\n",h(x[i],theta),y[i]);   
@@ -166,7 +166,7 @@ void writeInfo(FILE *fp,float cus,int i,bool isPred){
 	fputs(s,fp);      
 }
 void writeTheta(float *theta){
-	FILE *th = fopen("theta.csv", "w+");
+	FILE *th = fopen("./csv/theta.csv", "w+");
     for(int i = 0;i<FEATURES;i++){
     	float val = theta[i];  
         char s[2048];
@@ -425,12 +425,12 @@ void gradientDescMiniBTimed(float **x,float y[],float **xt,float **xVal,float *y
 /*Main*/
 int main(int argc, char** argv){
     float **traindata,*label,**dataTransp,**dataVal,*labelVal,*theta;  
-   
+    system("mkdir csv");
 	srand(time(NULL));
     const string HELP = "-features ou -f          : define o numero de features (10 por padrão)\n-examples ou -e          : define o numero de exemplos pra treino (45849 por padrão)\n-validates ou -v         : define o numero de exemplos pra validacao (9170 por padrão)\n-iterations ou -i        : define o numero de iteracoes da regressão (1000 por padrão)\n-alpha ou -a             : define o valor da learning rate (0.00027 por padrão)\n-verbose ou -vr          : imprime ou nao os resultados a cada N iteracoes (0 desligado, !0 ligado, ligado por padrão)\n-stochasticdesc ou -sgd  : faz stochastic gradient descent no lugar de batch gradient descent (0 desligado, !0 ligado, desligado por padrão)\n-randtheta ou -rt        : inicializa o vetor de thetas com valores aleatórios (0 desligado, !0 ligado, desligado por padrão)\n-howverbose ou -hvr      : define a cada quantas iterações devem ser impressos os resultados (1000 por padrão)\n-trainfeatures ou -tf    : indica o nome do arquivo com as features para treino (train_features.csv por padrão)\n-trainlabels ou -tl      : indica o nome do arquivo com as labels para treino (train_labels.csv por padrão)\n-validatefeatures ou -vf : indica o nome do arquivo com as features para validação (valid_features.csv por padrão)\n-validatelabels ou -vl   : indica o nome do arquivo com as labels para validação (valid_labels.csv por padrão)\n-help ou -h              : exibe este texto e termina\n";
     
 	cout << "Starting linear regression...\n";
-	string fnameEx = "train_features.csv",fnameLabel= "train_labels.csv",fnameVal= "valid_features.csv",fnameValLabel = "valid_labels.csv";
+	string fnameEx = "./csv/train_features.csv",fnameLabel= "./csv/train_labels.csv",fnameVal= "./csv/valid_features.csv",fnameValLabel = "./csv/valid_labels.csv";
     for(int i = 1;i<argc;i++){
         vector<string> args = split(string(argv[i]),'=');
         if(args[0] == "-features" || args[0] == "-f") FEATURES = strToNum<int>(args[1]);
@@ -462,11 +462,11 @@ int main(int argc, char** argv){
     dataVal = allocateMatrix(VALIDATE,FEATURES);
     theta = (float*) calloc(FEATURES,sizeof(float));
     labelVal = (float*) calloc(EXAMPLES,sizeof(float));
-	FILE *costCsv = fopen("costs.csv", "w+"), *timeCsv = fopen("times.csv", "w+");
+	FILE *costCsv = fopen("./csv/costs.csv", "w+"), *timeCsv = fopen("./csv/times.csv", "w+");
     FILE *costPredCsv, *timePredCsv;
     if(DOVALIDATE){
-        costPredCsv = fopen("predictCosts.csv", "w+");
-	    timePredCsv = fopen("predictTimes.csv", "w+");
+        costPredCsv = fopen("./csv/predictCosts.csv", "w+");
+	    timePredCsv = fopen("./csv/predictTimes.csv", "w+");
 	}
     if(FEATURES <= 0){printf("Por favor, use um número positivo de features!\n");return 0;}
     if(EXAMPLES <= 0){printf("Por favor, use um número positivo de exemplos de treino!\n");return 0;}

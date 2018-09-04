@@ -43,10 +43,10 @@ def main():
     else:
         g="-mb=1"
 
-    train_features = shape_csv('train_features.csv')
-    train_labels = shape_csv('train_labels.csv')
-    valid_features = shape_csv('valid_features.csv')
-    valid_labels = shape_csv('valid_labels.csv')
+    train_features = shape_csv('csv/train_features.csv')
+    train_labels = shape_csv('csv/train_labels.csv')
+    valid_features = shape_csv('csv/valid_features.csv')
+    valid_labels = shape_csv('csv/valid_labels.csv')
 
     for a in range(0,len(alpha)):
         prog=[]
@@ -63,13 +63,13 @@ def main():
         call(prog)
         
         #train_lr(theta, train_features, train_labels, iterations, alpha)
-        theta = shape_csv('theta.csv')
+        theta = shape_csv('csv/theta.csv')
         #print(theta)
         if not np.isfinite(theta[0]).all():
             continue 
-        costs = shape_csv('costs.csv')
-        predictions = shape_csv('predictCosts.csv')
-        timestamps = shape_csv('times.csv')
+        costs = shape_csv('csv/costs.csv')
+        predictions = shape_csv('csv/predictCosts.csv')
+        timestamps = shape_csv('csv/times.csv')
 
         #Plotting
         train_plot.plot(timestamps[0]/1000, costs[0], cores[a], label=gradient+ " " +str(alpha[a]), linestyle='-')

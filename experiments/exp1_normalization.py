@@ -31,11 +31,11 @@ def main():
 
     for normalized in range(0, 2):
         if normalized == 1:
-                train_features = shape_csv('train_features.csv')
-                train_labels = shape_csv('train_labels.csv')
+                train_features = shape_csv('csv/train_features.csv')
+                train_labels = shape_csv('csv/train_labels.csv')
         else:
-                train_features = shape_csv('not_norm_train_features.csv')
-                train_labels = shape_csv('not_norm_train_labels.csv')  
+                train_features = shape_csv('csv/not_norm_train_features.csv')
+                train_labels = shape_csv('csv/not_norm_train_labels.csv')  
 
         for a in range(0,len(alpha)):
             prog=[]

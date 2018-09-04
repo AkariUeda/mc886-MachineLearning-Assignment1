@@ -32,10 +32,10 @@ def main():
     valid_plot.set_xlabel('Iterations')
     cores = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
 
-    train_features = shape_csv('train_features.csv')
-    train_labels = shape_csv('train_labels.csv')
-    valid_features = shape_csv('valid_features.csv')
-    valid_labels = shape_csv('valid_labels.csv')
+    train_features = shape_csv('csv/train_features.csv')
+    train_labels = shape_csv('csv/train_labels.csv')
+    valid_features = shape_csv('csv/valid_features.csv')
+    valid_labels = shape_csv('csv/valid_labels.csv')
 
     for a in range(0,len(alpha)):
         prog=[]
@@ -51,9 +51,9 @@ def main():
         call(prog)
         print(prog)
         #train_lr(theta, train_features, train_labels, iterations, alpha)
-        costs = shape_csv('costs.csv')
-        theta = shape_csv('theta.csv')
-        predictions = shape_csv('predictCosts.csv')
+        costs = shape_csv('csv/costs.csv')
+        theta = shape_csv('csv/theta.csv')
+        predictions = shape_csv('csv/predictCosts.csv')
 
         #Plotting
         if not np.isfinite(theta[0]).all(): 

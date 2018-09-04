@@ -31,7 +31,7 @@ def main():
     test_features = shape_csv('test_features.csv')
     test_labels = shape_csv('test_labels.csv')
 
-    theta = shape_csv('final_theta.csv')
+    theta = shape_csv('csv/final_theta.csv')
     h = np.dot(test_features, theta[0])
     cost = metrics.mean_squared_error(test_labels, h)
     print("Prediction error: "+str(cost))

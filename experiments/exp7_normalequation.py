@@ -38,17 +38,17 @@ def main():
     pred.set_xlabel('Examples')
 
     cores = ['tab:blue', 'tab:orange']
-    train_features = shape_csv('train_features.csv')
-    train_labels = shape_csv('train_labels.csv')
-    valid_features = shape_csv('valid_features.csv')
-    valid_labels = shape_csv('valid_labels.csv')
+    train_features = shape_csv('csv/train_features.csv')
+    train_labels = shape_csv('csv/train_labels.csv')
+    valid_features = shape_csv('csv/valid_features.csv')
+    valid_labels = shape_csv('csv/valid_labels.csv')
 
     X_features = np.concatenate((train_features, valid_features), axis=0)
     X_labels = np.concatenate((train_labels, valid_labels), axis=0)
     print(X_features.shape)
 
-    test_features = shape_csv('test_features.csv')
-    test_labels = shape_csv('test_labels.csv')
+    test_features = shape_csv('csv/test_features.csv')
+    test_labels = shape_csv('csv/test_labels.csv')
 
     theta = normal_equation(X_features, X_labels, 10)
 
