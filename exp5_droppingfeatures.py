@@ -85,7 +85,7 @@ def main():
     prog.append("-async=1")
     prog.append("-vr=1")
     prog.append("-rd=1")
-    prog.append("-f=11")
+    prog.append("-f=10")
     prog.append("-tf=dropped_train_features.csv")
     prog.append("-tl=dropped_train_labels.csv")    
     prog.append("-vf=dropped_valid_features.csv")
