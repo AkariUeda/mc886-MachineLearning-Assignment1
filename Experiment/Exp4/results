@@ -1,12 +1,49 @@
-Theta 0 = -10677.525391
-Theta 1 = 36321.523438
-Theta 2 = -196.687988
-Theta 3 = 2063.922363
-Theta 4 = 4040.080078
-Theta 5 = -15993.764648
-Theta 6 = -13714.694336
-Theta 7 = 10162.594727
-Theta 8 = -6433.460938
-Theta 9 = -6100.211914
-Custo predito: 909627.437500
+
+Its 1k
+
+Theta 0 = -732.132812
+Theta 1 = 4797.969238
+Theta 2 = -1193.813477
+Theta 3 = -2224.155029
+Theta 4 = -1708.280151
+Theta 5 = -985.190491
+Theta 6 = -711.541809
+Theta 7 = 4729.663574
+Theta 8 = 1086.231689
+Theta 9 = 381.239075
+Custo predito: 9806614.000000
+
+
+Its 10k
+
+bash-4.4$ python3 exp4_training.py 10000 0.02 batch
+Starting linear regression...
+Theta 0 = -8371.498047
+Theta 1 = 18098.943359
+Theta 2 = -966.840454
+Theta 3 = -119.294083
+Theta 4 = 1280.624023
+Theta 5 = -10828.898438
+Theta 6 = -9481.710938
+Theta 7 = 14125.306641
+Theta 8 = -898.646179
+Theta 9 = -3834.351807
+Custo predito: 5606750.500000
+
+
+its 50k
+
+bash-4.4$ python3 exp4_training.py 50000 0.02 batch
+Starting linear regression...
+Theta 0 = -13493.468750
+Theta 1 = 30339.912109
+Theta 2 = -254.555496
+Theta 3 = 1996.286011
+Theta 4 = 4071.966553
+Theta 5 = -15228.250000
+Theta 6 = -13718.846680
+Theta 7 = 14891.188477
+Theta 8 = -3971.947510
+Theta 9 = -7394.345703
+Custo predito: 2383383.000000
 
