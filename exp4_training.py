@@ -77,6 +77,7 @@ def main():
 
     valid_labels, H = zip(*sorted(zip(valid_labels, h)))
 
+
     pred.plot(range(0, len(H)),H, 'b.', label="Predicted")
     pred.plot(range(0, len(valid_labels)), valid_labels, 'r.', label="Target")
     pred.legend()

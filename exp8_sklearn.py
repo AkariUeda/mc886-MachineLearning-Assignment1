@@ -6,6 +6,7 @@ import pandas as pd
 import sys
 import warnings
 from sklearn import linear_model
+from sklearn import metrics
 from subprocess import call
 
 warnings.filterwarnings('ignore')
@@ -33,12 +34,12 @@ def main():
     valid_features = shape_csv('valid_features.csv')
     valid_labels = shape_csv('valid_labels.csv')
 
-    model = linear_model.SGDRegressor(loss='squared_loss', alpha=0.02, learning_rate='constant')
+    model = linear_model.SGDRegressor(loss='squared_loss', alpha=0.0002, learning_rate='constant')
     model.fit(train_features, train_labels)
 
-    print("Custo predito %f\n".format(cost))
     valid_pred = model.predict(valid_features)
-
+    cost = metrics.mean_squared_error(valid_labels, valid_pred)
+    print("Custo predito: "+str(cost))
     valid_labels, valid_pred = zip(*sorted(zip(valid_labels, valid_pred)))
 
     pred.plot(range(0, len(valid_pred)),valid_pred, 'b.', label="Predicted")
