@@ -30,11 +30,8 @@ def main():
     test_features = shape_csv('test_features.csv')
     test_labels = shape_csv('test_labels.csv')
 
-    #train_lr(theta, train_features, train_labels, iterations, alpha)
     theta = shape_csv('final_theta.csv')
-
     h = np.dot(test_features, theta[0])
-
     J = np.dot(test_features, theta[0])
     J = np.subtract(J,test_labels)
     cost = np.sum(np.square(J))/(2*len(test_features))

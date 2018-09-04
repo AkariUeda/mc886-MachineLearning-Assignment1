@@ -61,7 +61,6 @@ def main():
         else:
             train_plot.plot(range(0,iteracoes), costs[0], cores[a], label=str(alpha[a]), linestyle='-')
 
-       
         if not np.isfinite(theta[0]).all(): 
             continue
         else:
