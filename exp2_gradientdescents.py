@@ -4,7 +4,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import sys
-from sklearn import metrics
+
 
 import warnings
 from subprocess import call
@@ -56,7 +56,7 @@ def main():
         prog.append("-dvl=1")
         prog.append(g)
         prog.append("-async=1")
-        prog.append("-vr=1")
+        prog.append("-vr=0")
 
         #Executes the call for C code
         #print(prog)            
@@ -70,17 +70,17 @@ def main():
         costs = shape_csv('costs.csv')
         predictions = shape_csv('predictCosts.csv')
         timestamps = shape_csv('times.csv')
-        pred_y = shape_csv('predictions.csv')
-        print(pred_y.shape)
+
         #Plotting
         train_plot.plot(timestamps[0]/1000, costs[0], cores[a], label=gradient+ " " +str(alpha[a]), linestyle='-')
         valid_plot.plot(timestamps[0]/1000, predictions[0], cores[a], label=gradient+ " " +str(alpha[a]), linestyle='-')
 
-        valid_cost = metrics.mean_squared_error(pred_y[:,0], pred_y[:,1])
+
+
 
         print("Learning rate: " + str(alpha[a]))
-        #print("   Training cost: " + str(train_cost))
-        print("   Validation cost: " +str(valid_cost))
+        print("   Training cost: " + str(costs[0, len(costs[0])-1]))
+        print("   Validation cost: " +str(predictions[0, len(predictions[0])-1]))
 
     train_plot.legend()
     valid_plot.legend()
