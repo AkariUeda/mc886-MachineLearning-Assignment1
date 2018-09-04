@@ -36,6 +36,7 @@ def main():
     model = linear_model.SGDRegressor(loss='squared_loss', alpha=0.02, learning_rate='constant')
     model.fit(train_features, train_labels)
 
+    print("Custo predito %f\n".format(cost))
     valid_pred = model.predict(valid_features)
 
     valid_labels, valid_pred = zip(*sorted(zip(valid_labels, valid_pred)))

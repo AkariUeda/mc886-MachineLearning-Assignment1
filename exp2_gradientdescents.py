@@ -26,14 +26,9 @@ def main():
     matplotlib.style.use('seaborn')
     #plt.yscale("log")
 
-
     fig = plt.figure()
     train_plot = fig.add_subplot(2,1,1)
-
-
     train_plot.set_ylabel('Training cost')
-
-
     valid_plot = fig.add_subplot(2,1,2)
 
     valid_plot.set_ylabel('Validation cost')
@@ -80,7 +75,7 @@ def main():
         valid_plot.plot(timestamps[0]/1000, predictions[0], cores[a], label=gradient+ " " +str(alpha[a]), linestyle='-')
         print("Learning rate: " + str(alpha[a]))
         print("   Training cost: " + str(costs[0, len(costs[0])-1]))
-        print("   Validation cost: " +str(predictions[0, len(costs[0])-1]))
+        print("   Validation cost: " +str(predictions[0, len(predictions[0])-1]))
 
     train_plot.legend()
     valid_plot.legend()
