@@ -459,7 +459,7 @@ int main(int argc, char** argv){
     traindata = allocateMatrix(EXAMPLES,FEATURES);
     label = (float*)calloc(EXAMPLES,sizeof(float));
     dataTransp = allocateMatrix(FEATURES,EXAMPLES);
-    dataVal = allocateMatrix(VALIDATE,FEATURES);
+    dataVal = allocateMatrix(EXAMPLES,FEATURES);
     theta = (float*) calloc(FEATURES,sizeof(float));
     labelVal = (float*) calloc(EXAMPLES,sizeof(float));
 	FILE *costCsv = fopen("costs.csv", "w+"), *timeCsv = fopen("times.csv", "w+");
